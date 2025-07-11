@@ -45,6 +45,10 @@ public function index()
     return view('student.index', compact('clubs', 'events'));
 }
 
+public function committee()
+{
+    return view('student.commitee');
+}
 
 public function showAllClubs()
 {

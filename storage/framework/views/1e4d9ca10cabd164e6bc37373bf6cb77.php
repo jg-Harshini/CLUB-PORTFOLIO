@@ -22,8 +22,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Libraries Stylesheet -->
-    <link href="{{ asset('lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link href="<?php echo e(asset('lib/animate/animate.min.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('lib/owlcarousel/assets/owl.carousel.min.css')); ?>" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -37,8 +37,8 @@
 
 
     <!-- Customized Bootstrap Stylesheet -->
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link href="<?php echo e(asset('css/bootstrap.min.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/style.css')); ?>" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- AOS CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
@@ -265,28 +265,28 @@
 
             <!-- Logo -->
             <a href="index.html" class="d-flex align-items-center text-decoration-none">
-                <img src="{{ asset('img/logo.jpg') }}" alt="Logo" style="height: 60px;">
+                <img src="<?php echo e(asset('img/logo.jpg')); ?>" alt="Logo" style="height: 60px;">
             </a>
 
             <!-- Navigation Links -->
             <div style="display: flex; gap: 40px;">
-                <a href="{{ route('student.index') }}" class="nav-item"
+                <a href="<?php echo e(route('student.index')); ?>" class="nav-item"
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="home" style="stroke:#2A5D9F; width:36px; height:36px;"></i><br>Home
                 </a>
-               <a href="{{ route('student.commitee') }}" class="nav-item"
+               <a href="<?php echo e(route('student.commitee')); ?>" class="nav-item"
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="users" style="stroke:#W91G11; width:36px; height:36px;"></i><br>Commitee
                 </a>
-                <a href="{{ route('student.clubs.all') }}" class="nav-item"
+                <a href="<?php echo e(route('student.clubs.all')); ?>" class="nav-item"
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="users" style="stroke:#E76F51; width:36px; height:36px;"></i><br>Clubs
                 </a>
-                <a href="{{ route('student.events') }}" class="nav-item"
+                <a href="<?php echo e(route('student.events')); ?>" class="nav-item"
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="calendar" style="stroke:#E9C46A; width:36px; height:36px;"></i><br>Events
                 </a>
-                <a href="{{ route('student.enroll.form') }}" class="nav-item"
+                <a href="<?php echo e(route('student.enroll.form')); ?>" class="nav-item"
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="edit-3" style="stroke:#F4A261; width:36px; height:36px;"></i><br>Enroll
                 </a>
@@ -315,15 +315,15 @@
             </ol>
             <div class="carousel-inner" role="listbox" style="height: 500px; overflow: hidden;background: #fafafa">
                 <div class="carousel-item active" style="height: 500px;">
-                    <img src="{{ asset('img/clg1.jpg') }}" class="d-block w-100" alt="Image"
+                    <img src="<?php echo e(asset('img/clg1.jpg')); ?>" class="d-block w-100" alt="Image"
                         style="height: 500px; object-fit: contain;">
                 </div>
                 <div class="carousel-item" style="height: 500px;">
-                    <img src="{{asset('img/clg2.jpg')}}" class="d-block w-100" alt="Image"
+                    <img src="<?php echo e(asset('img/clg2.jpg')); ?>" class="d-block w-100" alt="Image"
                         style="height: 500px; object-fit: contain;">
                 </div>
                 <div class="carousel-item" style="height: 500px;">
-                    <img src="{{asset('img/b4_PhotoGrid.png')}}" class="d-block w-100" alt="Image"
+                    <img src="<?php echo e(asset('img/b4_PhotoGrid.png')); ?>" class="d-block w-100" alt="Image"
                         style="height: 500px; object-fit:contain;">
                 </div>
             </div>
@@ -372,14 +372,14 @@
                 </div>
                 <div class="col-auto mb-3" data-aos="fade-left" data-aos-duration="1000">
                     <div class="box image-box wide">
-                        <img src="{{asset('img/WhatsApp Image 2025-06-08 at 17.53.57_20a7efab.jpg')}}" alt="Image 1" />
+                        <img src="<?php echo e(asset('img/WhatsApp Image 2025-06-08 at 17.53.57_20a7efab.jpg')); ?>" alt="Image 1" />
                     </div>
                 </div>
 
                 <!-- Second Row -->
                 <div class="col-auto mb-0" data-aos="fade-right" data-aos-duration="1500">
                     <div class="box image-box wide">
-                        <img src="{{asset('img/w1.jpg')}}" alt="Image 2" />
+                        <img src="<?php echo e(asset('img/w1.jpg')); ?>" alt="Image 2" />
                     </div>
                 </div>
                 <div class="col-auto mb-3" data-aos="fade-up" data-aos-duration="1500">
@@ -425,18 +425,18 @@
                 </p>
             </div>
             <div class="row g-4">
-                @foreach($clubs as $index => $club)
+                <?php $__currentLoopData = $clubs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $club): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.1s">
                     <div class="service-item">
                         <div class="service-inner">
                             <div class="service-img">
-                                <img src="{{ asset('storage/' . $club->logo) }}" class="img-fluid w-100 rounded" alt="Image">
+                                <img src="<?php echo e(asset('storage/' . $club->logo)); ?>" class="img-fluid w-100 rounded" alt="Image">
                             </div>
                             <div class="service-title">
                                 <div class="service-title-name">
                                     <div class="text-center rounded p-3 mx-5 mb-4" style="background-color: #063c64;">
                                         <a href="#" class="h4 text-white mb-0"
-                                            style="text-decoration: none;">{{$club->club_name}}</a>
+                                            style="text-decoration: none;"><?php echo e($club->club_name); ?></a>
                                     </div>
 
 
@@ -444,13 +444,14 @@
                                 </div>
                                 <div class="service-content pb-4" style="background-color: white; color: black;">
                                     <a href="#" style="color: black;">
-                                        <h4 class="mb-4 py-3" style="color: black;">{{$club->club_name}}</h4>
+                                        <h4 class="mb-4 py-3" style="color: black;"><?php echo e($club->club_name); ?></h4>
                                     </a>
                                     <div class="px-4">
                                         <p class="mb-4" style="color: black;">
-                                            {{$club->introduction}}
+                                            <?php echo e($club->introduction); ?>
+
                                         </p>
-                                        <a href="{{ route('student.clubs.show', ['id' => $club->id]) }}" class="btn rounded-pill py-3 px-5"
+                                        <a href="<?php echo e(route('student.clubs.show', ['id' => $club->id])); ?>" class="btn rounded-pill py-3 px-5"
                                             style="background-color: #800000; color: white;">Explore More</a>
                                     </div>
                                 </div>
@@ -461,11 +462,11 @@
 
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                
-{{-- View More Button --}}
+
 <div class="text-center mt-4">
-        <a href="{{ route('student.clubs.all') }}" class="carousel-btn">View More</a>
+        <a href="<?php echo e(route('student.clubs.all')); ?>" class="carousel-btn">View More</a>
     </div>
 </div>
 
@@ -615,26 +616,26 @@
 
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
-            @foreach($events as $event)
+            <?php $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="swiper-slide">
                     <div class="event-slide">
-                        <img src="{{ asset('storage/' . $event->image_path) }}" alt="{{ $event->event_name }}">
+                        <img src="<?php echo e(asset('storage/' . $event->image_path)); ?>" alt="<?php echo e($event->event_name); ?>">
                         <div class="event-info">
-                            <h5>{{ $event->event_name }}</h5>
-                            <p>{{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}</p>
-                            <p>{{ $event->club->club_name }}</p>
+                            <h5><?php echo e($event->event_name); ?></h5>
+                            <p><?php echo e(\Carbon\Carbon::parse($event->date)->format('d M Y')); ?></p>
+                            <p><?php echo e($event->club->club_name); ?></p>
                             <div class="text-center mt-4 mb-5">
-    <a href="{{ route('student.event.details', $event->id) }}" class="btn-maroon">View Details</a>
+    <a href="<?php echo e(route('student.event.details', $event->id)); ?>" class="btn-maroon">View Details</a>
 </div>
                         </div>
                     </div>
                 </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 
     <div class="text-center mt-4">
-        <a href="{{ route('student.events') }}" class="carousel-btn">Explore More</a>
+        <a href="<?php echo e(route('student.events')); ?>" class="carousel-btn">Explore More</a>
     </div>
 </div>
 
@@ -719,15 +720,15 @@
                 <!-- JavaScript Libraries -->
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-                <script src="{{asset('lib/wow/wow.min.js')}}"></script>
-                <script src="{{asset('lib/easing/easing.min.js')}}"></script>
-                <script src="{{asset('lib/waypoints/waypoints.min.js')}}"></script>
-                <script src="{{asset('lib/counterup/counterup.min.js')}}"></script>
-                <script src="{{asset('lib/owlcarousel/owl.carousel.min.js')}}"></script>
+                <script src="<?php echo e(asset('lib/wow/wow.min.js')); ?>"></script>
+                <script src="<?php echo e(asset('lib/easing/easing.min.js')); ?>"></script>
+                <script src="<?php echo e(asset('lib/waypoints/waypoints.min.js')); ?>"></script>
+                <script src="<?php echo e(asset('lib/counterup/counterup.min.js')); ?>"></script>
+                <script src="<?php echo e(asset('lib/owlcarousel/owl.carousel.min.js')); ?>"></script>
 
 
                 <!-- Template Javascript -->
-                <script src="{{asset('js/main.js')}}"></script>
+                <script src="<?php echo e(asset('js/main.js')); ?>"></script>
                
 
 </body>
@@ -735,4 +736,4 @@
 
 
 
-</html>
+</html><?php /**PATH C:\HARSHINI\intern\clubportfolio\resources\views/student/index.blade.php ENDPATH**/ ?>

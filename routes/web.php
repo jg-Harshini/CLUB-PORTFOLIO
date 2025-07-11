@@ -77,4 +77,6 @@ Route::prefix('tce/student')->group(function () {
     Route::get('/clubs', [StudentController::class, 'showAllClubs'])->name('student.clubs.all');
     Route::get('/clubs/{id}', [StudentController::class, 'viewClubDetails'])->name('student.clubs.show');
     Route::get('/events/{id}', [StudentController::class, 'showEventDetails'])->name('student.event.details');
+    Route::get('/commitee', [StudentController::class, 'committee'])->name('student.commitee');
+
 });
