@@ -3,31 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Club Registration Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            margin: 20px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        .footer {
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-    <p>Dear {{ $data['name'] }},</p>
+    <div class="container">
+        <p>Dear {{ $data['name'] }},</p>
 
-    <p>
-        We are pleased to inform you that your enrollment in the following clubs has been successfully completed:
-        <strong>{{ implode(', ', $data['clubs']) }}</strong>.
-    </p>
+        <p>
+            We are pleased to inform you that your enrollment in the following club(s) has been successfully completed:
+            <strong>{{ implode(', ', $data['clubs']) }}</strong>.
+        </p>
 
-    <p>
-        We are delighted to welcome you to the club community at Thiagarajar College of Engineering and look forward to your active involvement in the diverse activities, events, and initiatives organized throughout the academic year. Your participation plays a vital role in fostering a vibrant and collaborative campus environment.
-    </p>
+        <p>
+            Welcome to the vibrant club community at <strong>Thiagarajar College of Engineering</strong>! We look forward to your active participation in the events, activities, and initiatives organized throughout the academic year.
+        </p>
 
-    <p>
-        Further information regarding orientation sessions, regular meetings, and upcoming events will be shared shortly by the respective club coordinators.
-    </p>
+        <p>
+            Club coordinators will soon share further details regarding orientation sessions, regular meetings, and upcoming events.
+        </p>
 
-    <p>
-        Wishing you a rewarding and enriching experience ahead.
-    </p>
+        <p>
+            We wish you a rewarding and enriching experience ahead.
+        </p>
 
-    <p>
-        Best regards,<br>
-        Clubs Coordination Committee<br>
-        Thiagarajar College of Engineering
-    </p>
+        <div class="footer">
+            <p>
+                Best regards,<br>
+                <strong>Clubs Coordination Committee</strong><br>
+                Thiagarajar College of Engineering
+            </p>
+        </div>
+    </div>
 </body>
 </html>

@@ -47,15 +47,16 @@ body {
     <div class="header">
         <img src="{{ public_path('/img/tce.jpg') }}" alt="Logo">
 <h2 class="text-center fw-bold">
-    @if($filterType === 'club')
-        Student Registrations for {{ $filterValue }} Club
-    @elseif($filterType === 'dept')
-        Student Registrations for {{ $filterValue }} Department
-    @elseif($filterType === 'both')
-        Student Registrations for {{ $filterValue['club'] }} Club, {{ $filterValue['dept'] }} Department
-    @else
-        Overall Student Enrollment
-    @endif
+@if($filterType === 'club')
+  Student Registrations for {{ $filterValue }} Club
+@elseif($filterType === 'dept')
+  Student Registrations for {{ $filterValue }} Department
+@elseif($filterType === 'both')
+  Student Registrations for {{ $filterValue['club'] }} Club, {{ $filterValue['dept'] }} Department
+@else
+  Overall Student Enrollment
+@endif
+
 </h2>
 
 

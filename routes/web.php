@@ -92,10 +92,9 @@ Route::get('/hod/events/edit/{id}', [App\Http\Controllers\HodController::class, 
 Route::get('/hod/enrollments', [App\Http\Controllers\HodController::class, 'enrollments'])->name('hod.enrollments');
 Route::get('/hod/events/print/{id}', [HodController::class, 'print'])->name('hod.events.print');
 
-Route::get('/hod/enrollments/pdf', [App\Http\Controllers\HodController::class, 'exportPDF'])->name('hod.export.pdf');
-Route::get('/hod/export/excel', [App\Http\Controllers\HodController::class, 'exportExcel'])->name('hod.export.excel');
 
-
+Route::get('/hod/export/excel', [EnrollmentController::class, 'exportExcel'])->name('hod.export.excel');
+Route::get('/hod/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('hod.export.pdf');
 
 
 });

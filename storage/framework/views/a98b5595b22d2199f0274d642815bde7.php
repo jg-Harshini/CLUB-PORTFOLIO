@@ -1,8 +1,13 @@
+<?php
+    $user = Auth::user();
+    $routeName = $user->role === 'club_admin' ? 'clubadmin.events' : 'superadmin.events';
+?>
+
 <?php $__env->startSection('content'); ?>
 <div class="container mt-5">
     <h3 class="mb-4 text-primary">Edit Event Details</h3>
 
-    <form action="<?php echo e(route('superadmin.events', ['action' => 'edit', 'id' => $event->id])); ?>" method="POST" enctype="multipart/form-data">
+    <form action="<?php echo e(route($routeName, ['action' => 'edit', 'id' => $event->id])); ?>" method="POST" enctype="multipart/form-data">
         <?php echo csrf_field(); ?>
         <input type="hidden" name="club_id" value="<?php echo e($event->club_id); ?>">
 
@@ -123,4 +128,4 @@
 </div>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layout.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\HARSHINI\intern\club-tce\resources\views/events/edit.blade.php ENDPATH**/ ?>
+<?php echo $__env->make($layout ?? 'layout.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\HARSHINI\intern\club-tce\resources\views/events/edit.blade.php ENDPATH**/ ?>

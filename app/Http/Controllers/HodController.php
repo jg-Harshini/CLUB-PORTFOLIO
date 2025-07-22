@@ -197,11 +197,11 @@ $clubs = Club::orderBy('club_name', 'asc')->get();
     ]);
 }
 
+
 public function exportExcel()
 {
     return Excel::download(new EnrollmentsExport, 'enrollments.xlsx');
 }
-
 
 
 

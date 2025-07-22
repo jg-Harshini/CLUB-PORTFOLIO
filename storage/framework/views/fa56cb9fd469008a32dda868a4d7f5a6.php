@@ -5,6 +5,7 @@
     <title>Club Admin Panel</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
         html, body {
@@ -56,7 +57,7 @@
         <!-- Logout -->
         <form method="POST" action="<?php echo e(route('logout')); ?>">
             <?php echo csrf_field(); ?>
-            <button type="submit" class="btn btn-danger w-100 mt-2">Logout</button>
+            <button type="submit" class="btn btn-danger w-100 mt-3">Logout</button>
         </form>
     </div>
 

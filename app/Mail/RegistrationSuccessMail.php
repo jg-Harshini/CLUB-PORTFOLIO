@@ -15,10 +15,11 @@ class RegistrationSuccessMail extends Mailable
     {
         $this->data = $data;
     }
+public function build()
+{
+    return $this->subject('Club Registration Successful')
+                ->view('emails.registration_confirmation')
+                ->with(['data' => $this->data]); // ✅ Pass the data to the view
+}
 
-    public function build()
-    {
-        return $this->subject('Club Registration Successful')
-                    ->view('emails.registration_confirmation');
-    }
 }

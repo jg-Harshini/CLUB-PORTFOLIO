@@ -1,10 +1,14 @@
-@extends('layout.app')
+@extends($layout ?? 'layout.app')
+@php
+    $user = Auth::user();
+    $routeName = $user->role === 'club_admin' ? 'clubadmin.events' : 'superadmin.events';
+@endphp
 
 @section('content')
 <div class="container mt-5">
     <h3 class="mb-4 text-primary">Edit Event Details</h3>
 
-    <form action="{{ route('superadmin.events', ['action' => 'edit', 'id' => $event->id]) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route($routeName, ['action' => 'edit', 'id' => $event->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="club_id" value="{{ $event->club_id }}">
 

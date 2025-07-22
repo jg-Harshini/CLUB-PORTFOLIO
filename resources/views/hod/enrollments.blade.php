@@ -54,16 +54,21 @@
 <script>
   $(document).ready(function () {
     const table = $('#clubTable').DataTable();
+const dept = '{{ $department }}'; // Pass from backend to JS
 
     function updateExportLinks() {
       const club = $('#clubFilter').val();
       let pdfUrl = '{{ route("hod.export.pdf") }}';
       let excelUrl = '{{ route("hod.export.excel") }}';
 
-      if (club) {
-        pdfUrl += '?club=' + encodeURIComponent(club);
-        excelUrl += '?club=' + encodeURIComponent(club);
-      }
+  if (club) {
+    pdfUrl += '?club=' + encodeURIComponent(club) + '&dept=' + encodeURIComponent(dept);
+    excelUrl += '?club=' + encodeURIComponent(club) + '&dept=' + encodeURIComponent(dept);
+} else {
+    pdfUrl += '?dept=' + encodeURIComponent(dept);
+    excelUrl += '?dept=' + encodeURIComponent(dept);
+}
+
 
       $('#pdfExport').attr('href', pdfUrl);
       $('#excelExport').attr('href', excelUrl);
