@@ -132,4 +132,17 @@
         container.appendChild(div);
     }
 </script>
+<script>
+    function addStudent() {
+        const container = document.getElementById('student-fields');
+        const div = document.createElement('div');
+        div.classList.add('input-group', 'mb-2');
+        div.innerHTML = `
+            <input type="text" name="student_names[]" class="form-control me-2" placeholder="Name">
+            <input type="file" name="student_photos[]" class="form-control" accept="image/*">
+        `;
+        container.appendChild(div);
+    }
+</script>
+
 @endsection

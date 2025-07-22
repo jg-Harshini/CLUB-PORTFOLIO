@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Club;
+use App\Models\Registration;
 use App\Models\Event;
 use Carbon\Carbon;
 
@@ -18,23 +19,22 @@ class ClubAdminController extends Controller
     }
 
     public function dashboard()
-    {
-        // Manual role check
-        if (!Auth::check() || Auth::user()->role !== 'club_admin') {
-            abort(403, 'Unauthorized');
-        }
+{
+    $iotDeptDistribution = [
+        'CSE' => 12,
+        'ECE' => 9,
+        'MECH' => 5,
+        'CIVIL' => 4
+    ];
 
-        $clubId = Auth::user()->club_id;
+    $iotGenderDistribution = [
+        'Male' => 14,
+        'Female' => 12
+    ];
 
-        $eventCount = Event::where('club_id', $clubId)->count();
+    return view('dashboard', compact('iotDeptDistribution', 'iotGenderDistribution'));
+}
 
-        $nextEvent = Event::where('club_id', $clubId)
-                          ->whereDate('date', '>=', today())
-                          ->orderBy('date')
-                          ->first();
-
-        return view('ca.dash', compact('eventCount', 'nextEvent'));
-    }
    public function profile()
 {
     if (!Auth::check() || Auth::user()->role !== 'club_admin') {

@@ -14,7 +14,7 @@ class SuperadminController extends Controller
     public function clubs(Request $request, $action = null, $id = null)
     {
         switch ($action) {
-            case 'create':
+           case 'create':
     if ($request->isMethod('post')) {
         $request->validate([
             'club_name' => 'required|string|max:255',
@@ -25,36 +25,29 @@ class SuperadminController extends Controller
             'staff_coordinator_email' => 'nullable|email|max:255',
             'staff_coordinator_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'year_started' => 'required|integer',
-            'department_name' => 'required|string',
+            'department_id' => 'required|exists:departments,id', // ✅ Correct validation
             'category' => 'required|string|in:Technical,Non-Technical',
         ]);
+
+        $departmentId = $request->department_id; // ✅ Assign valid department ID
 
         $logoPath = $request->file('logo')->store('club_logos', 'public');
         $staffPhotoPath = $request->hasFile('staff_coordinator_photo')
             ? $request->file('staff_coordinator_photo')->store('staff_photos', 'public')
             : null;
 
-        // Fetch department_id using department_name
-        $department = DB::table('departments')
-    ->where('name', $request->department_name)
-    ->first();
-
-if (!$department) {
-    return back()->withErrors(['department_name' => 'Invalid department selected.']);
-}
-
-Club::create([
-    'club_name' => $request->club_name,
-    'logo' => $logoPath,
-    'introduction' => $request->introduction,
-    'mission' => $request->mission,
-    'staff_coordinator_name' => $request->staff_coordinator_name,
-    'staff_coordinator_email' => $request->staff_coordinator_email,
-    'staff_coordinator_photo' => $staffPhotoPath,
-    'year_started' => $request->year_started,
-    'department_id' => $department->id, // ✅ fixed here
-    'category' => $request->category,
-]);
+        Club::create([
+            'club_name' => $request->club_name,
+            'logo' => $logoPath,
+            'introduction' => $request->introduction,
+            'mission' => $request->mission,
+            'staff_coordinator_name' => $request->staff_coordinator_name,
+            'staff_coordinator_email' => $request->staff_coordinator_email,
+            'staff_coordinator_photo' => $staffPhotoPath,
+            'year_started' => $request->year_started,
+            'department_id' => $departmentId, // ✅ Use correct ID here
+            'category' => $request->category,
+        ]);
 
         return redirect()->back()->with('success', 'Club created successfully!');
     }
@@ -150,57 +143,62 @@ Club::create([
     public function events(Request $request, $action = null, $id = null)
     {
         switch ($action) {
-            case 'create':
-                if ($request->isMethod('post')) {
-                    $request->validate([
-                        'club_id' => 'required|exists:clubs,id',
-                        'event_name' => 'required|string|max:255',
-                        'description' => 'nullable|string',
-                         'chief_guest' => 'required|string|max:255',
-                        'start_date' => 'required|date',
-                        'end_date' => 'required|date',
-                        'start_time' => 'required',
-                        'end_time' => 'required',
-                        'participants' => 'nullable|integer|min:0',
-                        'coordinators' => 'nullable|integer|min:0',
-                        'best_performance' => 'nullable|integer|min:0',
-                        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                        'winner_name' => 'nullable|string|max:255',
-                        'winner_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                        'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+          case 'create':
+    if ($request->isMethod('post')) {
+        $request->validate([
+            'club_name' => 'required|string|max:255',
+            'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'introduction' => 'nullable|string',
+            'mission' => 'nullable|string',
+            'staff_coordinator_name' => 'required|string|max:255',
+            'staff_coordinator_email' => 'required|email|max:255',
+            'staff_coordinator_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'year_started' => 'required|digits:4|integer|min:1900',
+'department_id' => 'required|exists:departments,id',
+            'category' => 'required|in:Technical,Non-Technical',
+            'student_names.*' => 'nullable|string|max:255',
+            'student_photos.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $data = $request->only([
+            'club_name', 'introduction', 'mission', 'staff_coordinator_name',
+            'staff_coordinator_email', 'year_started', 'department_id', 'category'
+        ]);
+
+        // Upload logo
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo')->store('club_logos', 'public');
+        }
+
+        // Upload staff photo
+        if ($request->hasFile('staff_coordinator_photo')) {
+            $data['staff_coordinator_photo'] = $request->file('staff_coordinator_photo')->store('staff_photos', 'public');
+        }
+
+        $club = Club::create($data);
+
+        // Handle optional student coordinators
+        if ($request->has('student_names')) {
+            foreach ($request->student_names as $index => $student_name) {
+                if (!empty($student_name)) {
+                    $photoPath = null;
+                    if ($request->hasFile("student_photos.$index") && $request->file("student_photos.$index")->isValid()) {
+                        $photoPath = $request->file("student_photos.$index")->store('student_photos', 'public');
+                    }
+
+                    $club->studentCoordinators()->create([
+                        'name' => $student_name,
+                        'photo' => $photoPath,
                     ]);
-
-                    $data = $request->only([
-                        'club_id', 'event_name', 'description','chief_guest','start_date', 'end_date', 'start_time', 'end_time', 'participants', 'coordinators', 'best_performance', 'winner_name'
-                    ]);
-
-                    if ($request->hasFile('image')) {
-                        $data['image_path'] = $request->file('image')->store('event_images', 'public');
-                    }
-
-                    if ($request->hasFile('winner_photo')) {
-                        $data['winner_photo'] = $request->file('winner_photo')->store('winner_photos', 'public');
-                    }
-
-                    if ($request->hasFile('gallery')) {
-                        $galleryPaths = [];
-
-                        foreach ($request->file('gallery') as $image) {
-                            if ($image->isValid()) {
-                                $path = $image->store('event_gallery', 'public');
-                                $galleryPaths[] = $path;
-                            }
-                        }
-
-                        $data['gallery'] = json_encode($galleryPaths);
-                    }
-
-                    Event::create($data);
-
-                    return redirect()->back()->with('success', 'Event added successfully!');
                 }
+            }
+        }
 
-                return view('events.create');
+        return redirect()->back()->with('success', 'Club added successfully!');
+    }
+
+    return view('clubs.create');
+
 
             case 'view':
                 $event = Event::findOrFail($id);

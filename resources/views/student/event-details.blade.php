@@ -158,6 +158,10 @@
             <a href="{{ route('student.index') }}" class="nav-item" style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                 <i data-feather="home" style="stroke:#2A5D9F; width:36px; height:36px;"></i><br>Home
             </a>
+            <a href="{{ route('student.commitee') }}" class="nav-item"
+                    style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
+                    <i data-feather="users" style="stroke:#W91G11; width:36px; height:36px;"></i><br>Commitee
+                </a>
             <a href="{{ route('student.clubs.all') }}" class="nav-item" style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                 <i data-feather="users" style="stroke:#E76F51; width:36px; height:36px;"></i><br>Clubs
             </a>
@@ -261,51 +265,73 @@
 
 </div>
 
-<footer>
-<div class="container-fluid" style="background-color: #800000; color: white; padding: 40px 0;">
-    <!-- First Row -->
-    <div class="row g-4 px-5">
-        <!-- Contact Info -->
-        <div class="col-md-6 col-lg-6">
-            <h4 style="color: #B34747; margin-bottom: 20px;">Contact Info</h4>
-            <p><i class="fa fa-map-marker-alt me-2" style="color: #B34747;"></i>V3JJ+VJ3, Thiruparankundram, Tamil Nadu 625015</p>
-            <p><i class="fas fa-envelope me-2" style="color: #B34747;"></i>www.tce.edu</p>
-            <p><i class="fas fa-phone me-2" style="color: #B34747;"></i>+91 452 2482240</p>
-        </div>
+<!-- Footer Start -->
+<footer style="background-color: #800000; color: white; padding: 10px 0; font-size: 14px;">
+  <div class="container px-3">
 
-        <!-- Developed By -->
-        <div class="col-md-6 col-lg-6">
-            <h4 style="color: #B34747; margin-bottom: 20px;">Developed By</h4>
-            <ul style="list-style: none; padding: 0;">
-                <li>1. Aburvaa A S</li>
-                <li>2. Harshini J G</li>
-                <li>3. Kiruthika B</li>
-                <li>4. Nikitha A S</li>
-                <li>5. Varshini C</li>
-            </ul>
+    <div class="row g-3 text-center text-md-start align-items-start">
+
+      <!-- Contact Info -->
+      <div class="col-md-4">
+        <h6 class="mb-1" style="color: #ff9999;">Contact Info</h6>
+        <p class="mb-1">
+          <i class="fa fa-map-marker-alt me-2" style="color: #ff9999;"></i>
+          V3JJ+VJ3, Thiruparankundram, TamilNadu 625015
+        </p>
+        <p class="mb-1">
+          <i class="fas fa-envelope me-2" style="color: #ff9999;"></i>
+          <a href="https://www.tce.edu" style="color: white; text-decoration: none;">www.tce.edu</a>
+        </p>
+        <p class="mb-0">
+          <i class="fas fa-phone me-2" style="color: #ff9999;"></i>
+          +91 452 2482240
+        </p>
+      </div>
+
+      <!-- Developed By -->
+      <div class="col-md-4">
+        <h6 class="mb-1" style="color: #ff9999;">Developed By</h6>
+        <p class="mb-1">Aburvaa A S, Harshini J G</p>
+        <p class="mb-1">Kiruthika B, Nikitha A S, Varshini C</p>
+        <p class="mb-0">3rd Year IT Department,Thiagarajar College of Engineering.</p>
+      </div>
+
+      <!-- Google Map -->
+      <div class="col-md-4">
+        <h6 class="mb-1" style="color: #ff9999;">Our Location</h6>
+        <div class="ratio ratio-16x9 rounded" style="height: 120px; overflow: hidden;">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15722.598045886074!2d78.07186475545656!3d9.87974334043231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b00c58f98cfb84d%3A0x29f51efea3e84bf2!2sThiagarajar%20College%20of%20Engineering!5e0!3m2!1sen!2sin!4v1753094148686!5m2!1sen!2sin"
+            style="border:0;" allowfullscreen="" loading="lazy">
+          </iframe>
         </div>
+      </div>
     </div>
 
-    <!-- Second Row -->
-    <div class="row px-5 mt-4">
-        <div class="col-12">
-            <h4 style="color: #B34747; margin-bottom: 20px;">Connect With Us</h4>
-            <div>
-                <a href="https://www.facebook.com/TheOfficialTCEPage" style="color: white; margin-right: 15px; font-size: 1.5rem;"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://x.com/tceofficialpage" style="color: white; margin-right: 15px; font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com/tce_madurai/" style="color: white; margin-right: 15px; font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
-                <a href="https://x.com/tceofficialpage" style="color: white; font-size: 1.5rem;"><i class="fab fa-linkedin-in"></i></a>
-            </div>
+    <!-- Social & PDF Download -->
+    <div class="row mt-3 text-center">
+      <div class="col">
+        <h6 class="mb-2" style="color: #ff9999;">Connect With Us</h6>
+        <a href="https://www.facebook.com/TheOfficialTCEPage" class="me-2" style="color: white;"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://x.com/tceofficialpage" class="me-2" style="color: white;"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com/tce_madurai/" class="me-2" style="color: white;"><i class="fab fa-instagram"></i></a>
+        <a href="https://x.com/tceofficialpage" class="me-2" style="color: white;"><i class="fab fa-linkedin-in"></i></a>
+
+        <!-- PDF Download -->
+        <div class="mt-2">
+          <a href="{{ asset('assets\MANUAL.pdf') }}" download class="btn btn-outline-light btn-sm py-1 px-2" style="font-size: 12px;">
+            <i class="fas fa-file-pdf me-1"></i> Download Student Manual
+          </a>
         </div>
+      </div>
     </div>
 
-    <hr style="border-color: #B34747; margin: 30px 5%;">
-    <div class="text-center" style="color: white; font-size: 0.9rem;">
-        &copy; 2025 TCE College. All Rights Reserved.
+    <hr class="my-2" style="border-color: #B34747;">
+    <div class="text-center small" style="font-size: 12px;">
+      &copy; 2025 TCE College. All Rights Reserved.
     </div>
-</div>
+  </div>
 </footer>
-
 
 
 <!-- Scripts -->
