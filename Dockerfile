@@ -1,4 +1,8 @@
-FROM php:8.2-fpm
+# Use the official PHP image with Apache
+FROM php:8.2-apache
+
+# Set working directory
+WORKDIR /var/www/html
 
 # 1. System dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
@@ -23,23 +27,20 @@ RUN apt-get update && apt-get install -y \
         xml \
         zip
 
-# 2. Install Composer
+# 2. Enable Apache Rewrite Module
+RUN a2enmod rewrite
+
+# 3. Copy all files
+COPY . /var/www/html
+
+# 4. Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# 5. Install Composer dependencies
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# 3. Set working directory
-WORKDIR /var/www/html
-
-# 4. Copy project files
-COPY . .
-
-# 5. Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# 6. Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# 7. Expose port (optional)
-EXPOSE 9000
-
-# 8. Start PHP-FPM
-CMD ["php-fpm"]
+# 6. Expose port
+EXPOSE 80
