@@ -1,6 +1,6 @@
-FROM php:8.2-apache
+FROM php:8.2-fpm
 
-# Install system dependencies and PHP extensions
+# 1. System dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -11,27 +11,35 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
+    pkg-config \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql gd mbstring xml
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        gd \
+        mbstring \
+        tokenizer \
+        xml \
+        zip
 
-# Enable Apache mod_rewrite for Laravel routes
-RUN a2enmod rewrite
-
-# Set the working directory inside the container
-WORKDIR /var/www/html
-
-# Copy Laravel application code
-COPY . .
-
-# Copy Composer from Composer image
+# 2. Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies
+# 3. Set working directory
+WORKDIR /var/www/html
+
+# 4. Copy project files
+COPY . .
+
+# 5. Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# Set correct permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+# 6. Set permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose Apache port
-EXPOSE 80
+# 7. Expose port (optional)
+EXPOSE 9000
+
+# 8. Start PHP-FPM
+CMD ["php-fpm"]
