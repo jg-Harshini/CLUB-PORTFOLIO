@@ -23,7 +23,6 @@ RUN apt-get update && apt-get install -y \
         pdo_mysql \
         gd \
         mbstring \
-        tokenizer \
         xml \
         zip
 
