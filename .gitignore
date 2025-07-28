@@ -1,26 +1,57 @@
-*.log
-.DS_Store
-.env.backup
-.env.production
-.phpactor.json
+# Laravel defaults
+/vendor/
+node_modules/
+.env
+.env.*
 .phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
-/public/build
-/public/hot
+.phpunit.cache
+.phpactor.json
+composer.lock
+yarn.lock
+npm-debug.log
+
+# Storage and logs
+/storage/*.key
+/storage/*.log
+/storage/framework/*
+/storage/logs/*
+/storage/oauth-private.key
+/storage/oauth-public.key
 /public/storage
-/vendor
-Homestead.json
-Homestead.yaml
-Thumbs.db
-# Allow storage and database folders
+
+# Exceptions - keep storage and database folders (structure only)
 !/storage/
-!/storage/**/*
+!/storage/app/
+!/storage/framework/
+!/storage/logs/
 !/database/
-!/database/**/*
+!/database/migrations/
+!/database/factories/
+!/database/seeders/
+
+# IDEs and OS junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.fleet/
+.zed/
+
+# Laravel build artifacts
+/public/hot
+/public/build
+/public/mix-manifest.json
+
+# Laravel Homestead
+Homestead.yaml
+Homestead.json
+
+# Nova (if used)
+.nova/
+
+# Optional: auth config (composer, npm)
+auth.json
+
+# Optional: lock files (if handled differently on server)
+pnpm-lock.yaml
+bun.lockb
