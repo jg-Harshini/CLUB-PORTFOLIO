@@ -4,5 +4,12 @@
   },
   "deploy": {
     "startCommand": ""
-  }
+  },
+  "scripts": {
+  "post-install-cmd": [
+    "@php artisan migrate --force",
+    "@php artisan session:table"
+  ]
+}
+
 }
