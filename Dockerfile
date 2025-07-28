@@ -1,7 +1,6 @@
-# Use PHP 8.2 with Apache
 FROM php:8.2-apache
 
-# Install system dependencies
+# Install dependencies including oniguruma (libonig-dev)
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -9,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libonig-dev \                 # ✅ Add this line
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql mbstring tokenizer xml
 
