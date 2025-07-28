@@ -10,27 +10,28 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     libonig-dev \
+    libxml2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql gd mbstring xml
 
-# Enable Apache mod_rewrite for Laravel
+# Enable Apache mod_rewrite for Laravel routes
 RUN a2enmod rewrite
 
-# Set working directory in container
+# Set the working directory inside the container
 WORKDIR /var/www/html
 
-# Copy Laravel project files into the container
+# Copy Laravel application code
 COPY . .
 
-# Copy Composer from official Composer image
+# Copy Composer from Composer image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies using Composer
+# Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# Set proper permissions
+# Set correct permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-# Expose port 80
+# Expose Apache port
 EXPOSE 80
