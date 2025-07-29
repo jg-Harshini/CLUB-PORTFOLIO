@@ -115,6 +115,8 @@ return [
         'model' => App\Models\User::class,
     ],
 ],
+'prefix' => 'tce',
+'login' => '/tce/login',
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 

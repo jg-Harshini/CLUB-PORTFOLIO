@@ -24,18 +24,19 @@ Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('exp
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect('/tce/login');
 });
-
 /*
 |--------------------------------------------------------------------------
 | AUTHENTICATION ROUTES
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::prefix('tce')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+});
 
 /*
 |--------------------------------------------------------------------------

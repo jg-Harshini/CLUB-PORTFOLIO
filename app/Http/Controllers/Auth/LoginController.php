@@ -8,10 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
-    {
-        return view('login');  // your login form
-    }
+public function showLoginForm()
+{
+    return view('login');
+}
+
+// Override default login route redirect
+public function redirectTo()
+{
+    return '/tce/login';
+}
+
 
     public function login(Request $request)
 {
