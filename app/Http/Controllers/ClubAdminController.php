@@ -9,7 +9,6 @@ use App\Models\Club;
 use App\Models\Registration;
 use App\Models\Event;
 use Carbon\Carbon;
-
 class ClubAdminController extends Controller
 {
     public function __construct()
@@ -18,22 +17,109 @@ class ClubAdminController extends Controller
         // Removed 'club_admin' middleware
     }
 
-    public function dashboard()
+    
+
+public function dashboard()
 {
-    $iotDeptDistribution = [
-        'CSE' => 12,
-        'ECE' => 9,
-        'MECH' => 5,
-        'CIVIL' => 4
+    $clubId = Auth::user()->club_id;
+$clubName = \App\Models\Club::where('id', $clubId)->value('club_name');
+
+    // Total students registered to this club
+$totalStudents = DB::table('club_registration')->where('club_id', $clubId)->count();
+
+    // Department-wise Distribution
+    $departmentDistribution = Registration::join('club_registration', 'registrations.id', '=', 'club_registration.registration_id')
+        ->where('club_registration.club_id', $clubId)
+        ->select('department', DB::raw('count(*) as total'))
+        ->groupBy('department')
+        ->pluck('total', 'department')
+        ->toArray();
+
+    // Gender-wise Distribution
+    $rawGender = Registration::join('club_registration', 'registrations.id', '=', 'club_registration.registration_id')
+        ->where('club_registration.club_id', $clubId)
+        ->select('gender', DB::raw('count(*) as count'))
+        ->groupBy('gender')
+        ->pluck('count', 'gender');
+
+    $genderDistribution = [
+        'Male' => 0,
+        'Female' => 0,
+        'Other' => 0
     ];
 
-    $iotGenderDistribution = [
-        'Male' => 14,
-        'Female' => 12
-    ];
+    foreach ($rawGender as $key => $value) {
+        $key = strtolower(trim((string) $key));
+        if ($key === 'male') {
+            $genderDistribution['Male'] += $value;
+        } elseif ($key === 'female') {
+            $genderDistribution['Female'] += $value;
+        } else {
+            $genderDistribution['Other'] += $value;
+        }
+    }
+return view('dashboard', compact(
+    'totalStudents',
+    'departmentDistribution',
+    'genderDistribution',
+    'clubName'
+));
 
-    return view('dashboard', compact('iotDeptDistribution', 'iotGenderDistribution'));
 }
+
+public function enrollments(Request $request)
+{
+    $clubId = Auth::user()->club_id;
+
+    $query = Registration::select(
+            'registrations.name',
+            'registrations.roll_no',
+            'registrations.department',
+            'club_registration.id as club_reg_id' // 👈 added for checkbox value
+        )
+        ->join('club_registration', 'registrations.id', '=', 'club_registration.registration_id')
+        ->where('club_registration.club_id', $clubId);
+
+    $departmentFilter = $request->query('department');
+    if ($departmentFilter) {
+        $query->where('registrations.department', $departmentFilter);
+    }
+
+    $students = $query->get();
+    $departments = Registration::distinct()->pluck('department');
+
+    return view('enrollments', compact('students', 'departments'));
+}
+
+public function approveOrRejectEnrollments(Request $request)
+{
+    $request->validate([
+        'selected_ids' => 'required|array',
+        'action' => 'required|string|in:accept,reject',
+    ]);
+
+    $selectedIds = $request->input('selected_ids');
+    $action = $request->input('action');
+
+    if ($action === 'reject') {
+        DB::table('club_registration')->whereIn('id', $selectedIds)->delete();
+        $message = 'Selected students have been rejected.';
+    } else {
+        $message = 'Selected students have been accepted.';
+    }
+
+    if ($request->ajax()) {
+        return response()->json([
+            'status' => 'success',
+            'message' => $message
+        ]);
+    }
+
+    return back()->with('success', $message);
+}
+
+
+
 
    public function profile()
 {
@@ -63,11 +149,20 @@ class ClubAdminController extends Controller
             case 'create':
                 if ($request->isMethod('post')) {
                     $data = $request->validate([
-                        'event_name'  => 'required|string|max:255',
-                        'description' => 'nullable|string',
-                        'date'        => 'required|date',
-                        'time'        => 'required',
-                        'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                       'event_name'       => 'required|string|max:255',
+                        'description'      => 'nullable|string',
+                        'start_date'       => 'required|date',
+                        'end_date'         => 'required|date',
+                        'start_time'       => 'required',
+                        'end_time'         => 'required',
+                        'participants'     => 'nullable|integer',
+                        'coordinators'     => 'nullable|integer',
+                        'best_performance' => 'nullable|integer',
+                        'chief_guest'      => 'nullable|string|max:255',
+                        'winner_name'      => 'nullable|string|max:255',
+                        'image'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                        'winner_photo'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                        'gallery.*'        => 'image|mimes:jpeg,png,jpg,gif|max:2048',
                     ]);
                     $data['club_id'] = $clubId;
 
@@ -87,12 +182,10 @@ class ClubAdminController extends Controller
             case 'edit':
                 $event = Event::where('club_id', $clubId)->findOrFail($id);
 
-                if ($request->isMethod('post')) {
+if ($request->isMethod('post') && $action === 'edit' && $id) {
                     $updates = $request->validate([
                         'event_name'       => 'required|string|max:255',
                         'description'      => 'nullable|string',
-                        'date'             => 'required|date',
-                        'time'             => 'required',
                         'start_date'       => 'required|date',
                         'end_date'         => 'required|date',
                         'start_time'       => 'required',

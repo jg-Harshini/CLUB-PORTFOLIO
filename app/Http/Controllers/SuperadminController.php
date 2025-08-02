@@ -252,18 +252,20 @@ class SuperadminController extends Controller
                     }
 
                     $event->update([
-                        'event_name' => $request->event_name,
-                        'description' => $request->description,
-                        'start_date' => $request->start_date,
-                        'end_date' => $request->end_date,
-                        'start_time' => $request->start_time,
-                        'end_time' => $request->end_time,
-                        'participants' => $request->participants,
-                        'coordinators' => $request->coordinators,
-                        'best_performance' => $request->best_performance,
-                        'winner_name' => $request->winner_name,
-                        'chief_guest' =>  $request->chief_guest,
-
+                       'event_name'       => 'required|string|max:255',
+                        'description'      => 'nullable|string',
+                        'start_date'       => 'required|date',
+                        'end_date'         => 'required|date',
+                        'start_time'       => 'required',
+                        'end_time'         => 'required',
+                        'participants'     => 'nullable|integer',
+                        'coordinators'     => 'nullable|integer',
+                        'best_performance' => 'nullable|integer',
+                        'chief_guest'      => 'nullable|string|max:255',
+                        'winner_name'      => 'nullable|string|max:255',
+                        'image'            => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                        'winner_photo'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                        'gallery.*'        => 'image|mimes:jpeg,png,jpg,gif|max:2048',
                     ]);
 
                     return redirect()->route('superadmin.clubs', ['action' => 'profile', 'id' => $event->club_id])

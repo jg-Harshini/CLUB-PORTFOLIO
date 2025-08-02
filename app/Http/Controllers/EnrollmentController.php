@@ -7,48 +7,74 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use App\Models\Club;
+use Illuminate\Support\Facades\Auth;
 class EnrollmentController extends Controller
 {
-    // ✅ Export as Excel (.xlsx)
+
 public function exportPDF(Request $request)
 {
     $club = $request->query('club');
     $dept = $request->query('dept');
 
+    $filterType = null;
+    $filterValue = null;
+    $clubName = null;
+
+    // ✅ If logged in as club admin
+    if (Auth::check() && Auth::user()->role === 'club_admin') {
+        $clubId = Auth::user()->club_id;
+        $clubName = Club::where('id', $clubId)->value('club_name');
+
+        $query = Registration::select('registrations.id', 'registrations.name', 'registrations.roll_no', 'registrations.department', 'registrations.created_at', 'registrations.updated_at')
+            ->join('club_registration', 'registrations.id', '=', 'club_registration.registration_id')
+            ->where('club_registration.club_id', $clubId);
+
+        if ($dept) {
+            $query->where('registrations.department', $dept);
+            $filterType = 'clubadmin';
+            $filterValue = ['club' => $clubName, 'dept' => $dept];
+        } else {
+            $filterType = 'clubadmin';
+            $filterValue = ['club' => $clubName];
+        }
+
+        $students = $query->get();
+
+        return Pdf::loadView('pdf.enrollments', compact('students', 'filterType', 'filterValue', 'clubName'))
+            ->download('club_enrollments.pdf');
+    }
+
+    // ✅ Default (Superadmin/HOD) logic — unchanged
     $query = Registration::with('clubs');
 
     if ($club && $dept) {
-        // Both filters applied
         $query->where('department', $dept)
               ->whereHas('clubs', function ($q) use ($club) {
                   $q->where('club_name', $club);
               });
         $filterType = 'both';
         $filterValue = ['club' => $club, 'dept' => $dept];
+        $clubName = $club;
     } elseif ($club) {
-        // Only club filter
         $query->whereHas('clubs', function ($q) use ($club) {
             $q->where('club_name', $club);
         });
         $filterType = 'club';
         $filterValue = $club;
+        $clubName = $club;
     } elseif ($dept) {
-        // Only department filter
         $query->where('department', $dept);
         $filterType = 'dept';
         $filterValue = $dept;
-    } else {
-        // No filters
-        $filterType = null;
-        $filterValue = null;
     }
 
     $students = $query->get();
 
-    $pdf = Pdf::loadView('pdf.enrollments', compact('students', 'filterType', 'filterValue'));
-    return $pdf->download('registrations.pdf');
+    return Pdf::loadView('pdf.enrollments', compact('students', 'filterType', 'filterValue', 'clubName'))
+        ->download('registrations.pdf');
 }
+
 
 
 public function exportExcel(Request $request)
@@ -56,6 +82,58 @@ public function exportExcel(Request $request)
     $club = $request->query('club');
     $dept = $request->query('dept');
 
+    // ✅ Club Admin-specific export
+    if (Auth::check() && Auth::user()->role === 'club_admin') {
+        $clubId = Auth::user()->club_id;
+        $clubName = Club::where('id', $clubId)->value('club_name');
+
+        $query = Registration::select(
+                'registrations.roll_no',
+                'registrations.name',
+                'registrations.department',
+                'registrations.created_at',
+                'registrations.updated_at'
+            )
+            ->join('club_registration', 'registrations.id', '=', 'club_registration.registration_id')
+            ->where('club_registration.club_id', $clubId);
+
+        if ($dept) {
+            $query->where('registrations.department', $dept);
+        }
+
+        $students = $query->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Headers for club admin
+        $headers = ['Roll No', 'Name', 'Department', 'Created At', 'Updated At'];
+        $sheet->fromArray([$headers], null, 'A1');
+
+        $row = 2;
+        foreach ($students as $s) {
+            $sheet->fromArray([[
+                $s->roll_no,
+                $s->name,
+                $s->department,
+                $s->created_at ? $s->created_at->format('d-m-Y H:i') : 'N/A',
+                $s->updated_at ? $s->updated_at->format('d-m-Y H:i') : 'N/A'
+            ]], null, 'A' . $row++);
+        }
+
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = "club_enrollments_{$clubName}.xlsx";
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+    // ✅ Superadmin / HOD export (unchanged)
     $query = Registration::with('clubs');
     $filterType = null;
     $filterValue = null;
@@ -96,7 +174,6 @@ public function exportExcel(Request $request)
 
     $sheet->fromArray([$headers], null, 'A1');
 
-    // Data rows
     $row = 2;
     foreach ($registrations as $reg) {
         $data = [
@@ -119,7 +196,6 @@ public function exportExcel(Request $request)
         $sheet->fromArray([$data], null, 'A' . $row++);
     }
 
-    // Auto-size columns
     foreach (range('A', $sheet->getHighestColumn()) as $col) {
         $sheet->getColumnDimension($col)->setAutoSize(true);
     }
@@ -131,4 +207,5 @@ public function exportExcel(Request $request)
 
     return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
 }
+
 }

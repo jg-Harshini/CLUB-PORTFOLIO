@@ -53,6 +53,8 @@
 
         <a href="{{ route('clubadmin.dashboard') }}">Dashboard</a>
         <a href="{{ route('clubadmin.profile') }}">View Club Portfolio</a>
+        <a href="{{ route('clubadmin.enrollments') }}">Enrollments</a>
+
 
         <!-- Logout -->
         <form method="POST" action="{{ route('logout') }}">

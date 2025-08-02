@@ -38,6 +38,7 @@ Route::prefix('tce')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | SUPERADMIN ROUTES (Protected by auth)
@@ -77,12 +78,16 @@ Route::prefix('tce/student')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/clubadmin/dashboard', [ClubAdminController::class, 'dashboard'])->name('clubadmin.dashboard');
     Route::get('/clubadmin/profile', [ClubAdminController::class, 'profile'])->name('clubadmin.profile');
     Route::match(['get', 'post'], '/clubadmin/events/{action?}/{id?}', [ClubAdminController::class, 'events'])->name('clubadmin.events');
+    Route::get('/clubadmin/enrollments', [ClubAdminController::class, 'enrollments'])->name('clubadmin.enrollments');
+    Route::get('/clubadmin/export/excel', [EnrollmentController::class, 'exportExcel'])->name('clubadmin.export.excel');
+    Route::get('/clubadmin/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('clubadmin.export.pdf'); // ✅ now points to existing method
+    Route::post('/clubadmin/enrollments/action', [ClubAdminController::class, 'approveOrRejectEnrollments'])->name('clubadmin.enrollments.action');
 });
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/hod/dashboard', [App\Http\Controllers\HodController::class, 'index'])->name('hod.dashboard');

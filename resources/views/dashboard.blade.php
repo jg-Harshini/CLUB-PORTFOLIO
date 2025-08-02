@@ -4,8 +4,20 @@
 @section('content')
 <div class="row mb-4">
   <div class="col-12">
-    <h3 class="text-dark fw-bold mt-0">IOT Club Dashboard</h3>
-    <p class="text-muted">Analytics for department and gender distribution within the IOT Club</p>
+    <<h3 class="text-dark fw-bold mt-0">{{ $clubName }} Dashboard</h3>
+<p class="text-muted">Analytics for department and gender distribution within the {{ $clubName }}</p>
+
+  </div>
+</div>
+<!-- Total Student Registrations -->
+<div class="row mb-4">
+  <div class="col-lg-12">
+    <div class="card shadow-sm text-dark" style="background-color: #e0f7fa;">
+      <div class="card-body text-center">
+        <h5 class="card-title">Total Student Registrations</h5>
+        <h2 class="fw-bold">{{ $totalStudents }}</h2>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -14,8 +26,8 @@
   <!-- Department-wise Distribution -->
   <div class="col-lg-6">
     <div class="card shadow-sm">
-      <div class="card-body text-center">
-        <h6 class="fw-semibold mb-3">Department-wise Distribution (IOT Club)</h6>
+      <div class="card-body text-center"  style="height: 430px;">
+<h6 class="fw-semibold mb-3">Department-wise Distribution ({{ $clubName }})</h6>
         <canvas id="dept-chart" height="180"></canvas>
       </div>
     </div>
@@ -24,23 +36,25 @@
   <!-- Gender Distribution -->
   <div class="col-lg-6">
     <div class="card shadow-sm">
-      <div class="card-body text-center">
-        <h6 class="fw-semibold mb-3">Gender Distribution (IOT Club)</h6>
+      <div class="card-body text-center"  style="height: 430px;">
+<h6 class="fw-semibold mb-3">Gender Distribution ({{ $clubName }})</h6>
         <div style="height: 320px; display: flex; align-items: center; justify-content: center;">
-          <canvas id="gender-chart" width="250" height="250"></canvas>
+          <canvas id="gender-chart" width="300" height="300"></canvas>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 @endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const deptData = @json($iotDeptDistribution);
-  const genderData = @json($iotGenderDistribution);
+  const deptData = @json($departmentDistribution);
+  const genderData = @json($genderDistribution);
+
 
   const deptCtx = document.getElementById("dept-chart");
   const genderCtx = document.getElementById("gender-chart");

@@ -47,16 +47,21 @@ body {
     <div class="header">
         <img src="{{ public_path('/img/tce.jpg') }}" alt="Logo">
 <h2 class="text-center fw-bold">
-@if($filterType === 'club')
-  Student Registrations for {{ $filterValue }} Club
-@elseif($filterType === 'dept')
-  Student Registrations for {{ $filterValue }} Department
-@elseif($filterType === 'both')
-  Student Registrations for {{ $filterValue['club'] }} Club, {{ $filterValue['dept'] }} Department
-@else
-  Overall Student Enrollment
-@endif
-
+    @if($filterType === 'clubadmin')
+        @if(isset($filterValue['dept']))
+            Student Enrollment for {{ $filterValue['club'] }} Club - {{ $filterValue['dept'] }} Department
+        @else
+            Student Enrollment for {{ $filterValue['club'] }} Club
+        @endif
+    @elseif($filterType === 'club')
+        Student Registrations for {{ $filterValue }} Club
+    @elseif($filterType === 'dept')
+        Student Registrations for {{ $filterValue }} Department
+    @elseif($filterType === 'both')
+        Student Registrations for {{ $filterValue['club'] }} Club, {{ $filterValue['dept'] }} Department
+    @else
+        Overall Student Enrollment
+    @endif
 </h2>
 
 
@@ -64,47 +69,58 @@ body {
 
     <table>
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Roll No</th>
-                <th>Email</th>
-
+    <tr>
+        @if($filterType === 'clubadmin')
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+        @else
+            <th>ID</th>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Email</th>
+            @if (!in_array($filterType, ['dept', 'both']))
+                <th>Department</th>
+            @endif
+            @if (!in_array($filterType, ['club', 'both']))
+                <th>Clubs</th>
+            @endif
+            <th>Registered At</th>
+        @endif
+    </tr>
+</thead>
+<tbody>
+    @foreach ($students as $s)
+        <tr>
+            @if($filterType === 'clubadmin')
+                <td>{{ $s->roll_no }}</td>
+                <td>{{ $s->name }}</td>
+                <td>{{ $s->department }}</td>
+                <td>{{ $s->created_at ? $s->created_at->format('d-m-Y H:i') : 'N/A' }}</td>
+                <td>{{ $s->updated_at ? $s->updated_at->format('d-m-Y H:i') : 'N/A' }}</td>
+            @else
+                <td>{{ $s->id }}</td>
+                <td>{{ $s->name }}</td>
+                <td>{{ $s->roll_no }}</td>
+                <td>{{ $s->email }}</td>
                 @if (!in_array($filterType, ['dept', 'both']))
-                    <th>Department</th>
+                    <td>{{ $s->department }}</td>
                 @endif
-
                 @if (!in_array($filterType, ['club', 'both']))
-                    <th>Clubs</th>
+                    <td>
+                        @foreach ($s->clubs as $club)
+                            {{ $club->club_name }}@if (!$loop->last), @endif
+                        @endforeach
+                    </td>
                 @endif
+                <td>{{ $s->created_at ? $s->created_at->format('d-m-Y H:i') : 'N/A' }}</td>
+            @endif
+        </tr>
+    @endforeach
+</tbody>
 
-                <th>Registered At</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($students as $s)
-                <tr>
-                    <td>{{ $s->id }}</td>
-                    <td>{{ $s->name }}</td>
-                    <td>{{ $s->roll_no }}</td>
-                    <td>{{ $s->email }}</td>
-
-                    @if (!in_array($filterType, ['dept', 'both']))
-                        <td>{{ $s->department }}</td>
-                    @endif
-
-                    @if (!in_array($filterType, ['club', 'both']))
-                        <td>
-                            @foreach ($s->clubs as $club)
-                                {{ $club->club_name }}@if (!$loop->last), @endif
-                            @endforeach
-                        </td>
-                    @endif
-
-                    <td>{{ $s->created_at->format('d-m-Y H:i') }}</td>
-                </tr>
-            @endforeach
-        </tbody>
     </table>
 </body>
 </html>
