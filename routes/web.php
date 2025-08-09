@@ -31,6 +31,8 @@ Route::get('/', function () {
 | AUTHENTICATION ROUTES
 |--------------------------------------------------------------------------
 */
+Route::post('/user-clubs', [StudentController::class, 'getUserClubs'])->name('student.user.clubs');
+
 
 Route::prefix('tce')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');

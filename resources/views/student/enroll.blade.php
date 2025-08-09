@@ -270,7 +270,7 @@ label:not(.form-check-label) {
 <form id="clubForm" action="{{ route('student.enroll.submit') }}" method="POST" enctype="multipart/form-data" autocomplete="off">
 
     @csrf
-
+<div id="personalDetailsStep">
     <label>Name:</label>
     <input type="text" name="name" value="{{ old('name') }}" required>
 
@@ -285,7 +285,7 @@ label:not(.form-check-label) {
   <div class="row">
     <div class="col-md-6">
         <label>Email:</label>
-        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+<input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
     </div>
     <div class="col-md-6">
         <label>Gender:</label>
@@ -305,6 +305,11 @@ label:not(.form-check-label) {
             <option value="{{ $dept }}" {{ old('department') == $dept ? 'selected' : '' }}>{{ $dept }}</option>
         @endforeach
     </select>
+      <button type="button" id="nextBtn">Next</button>
+</div>
+<div id="clubSelectionStep" style="display:none;">
+  <div id="clubLimitInfo"></div>
+
 
     <label>Select Clubs (Min: 1 Tech + 1 Non-Tech | Max: 2 Tech + 1 Non-Tech):</label>
 <br>
@@ -332,67 +337,13 @@ label:not(.form-check-label) {
 
 
     <button type="submit">Submit</button>
+</div>
+
 </form>
 
 
 
-<script>
-    feather.replace();
 
-    function showCustomAlert(message) {
-        let alertBox = document.getElementById('customAlert');
-        if (!alertBox) {
-            alertBox = document.createElement('div');
-            alertBox.id = 'customAlert';
-            alertBox.style = `position: fixed; top: 0; left: 0; height: 100vh; width: 100vw; background: rgba(0,0,0,0.4); z-index: 2000; display: flex; justify-content: center; align-items: center;`;
-
-            alertBox.innerHTML = `
-                <div style="background: white; padding: 30px 40px; border-radius: 15px; text-align: center; max-width: 500px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">
-                    <h4 id="validationMessage" style="margin-bottom: 20px;">${message}</h4>
-                    <button onclick="document.getElementById('customAlert').style.display = 'none';"
-                            style="padding: 10px 20px; background-color: #0d6efd; color: white; border: none; border-radius: 8px;">
-                        OK
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(alertBox);
-        } else {
-            alertBox.querySelector('h4').innerText = message;
-            alertBox.style.display = 'flex';
-        }
-    }
-
-    const form = document.getElementById("clubForm");
-    const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-
-    allCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener("change", function () {
-            const selectedTech = document.querySelectorAll('input[data-type="tech"]:checked');
-            const selectedNonTech = document.querySelectorAll('input[data-type="nontech"]:checked');
-
-            if (selectedTech.length > 2) {
-                showCustomAlert("You can select a maximum of 2 Technical clubs.");
-                checkbox.checked = false;
-            }
-
-            if (selectedNonTech.length > 1) {
-                showCustomAlert("You can select a max of 1 Non-Technical club.");
-                checkbox.checked = false;
-            }
-        });
-    });
-
-    // ✅ Move this OUTSIDE the checkbox loop
-    form.addEventListener("submit", function (event) {
-        const selectedTech = document.querySelectorAll('input[data-type="tech"]:checked');
-        const selectedNonTech = document.querySelectorAll('input[data-type="nontech"]:checked');
-
-        if (selectedTech.length === 0 || selectedNonTech.length === 0) {
-            event.preventDefault();
-            showCustomAlert("Please select at least 1 Technical and 1 Non-Technical club.");
-        }
-    });
-</script>
 
 
 
@@ -465,6 +416,89 @@ label:not(.form-check-label) {
     </div>
   </div>
 </footer>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // When user changes email input, clear club info and enable all checkboxes
+    $('#email').on('change', function () {
+        $('#clubLimitInfo').text('');
+        $('input.club-checkbox').prop('disabled', false);
+    });
 
-</body>
-</html>  
+    // Next button click handler - check existing registrations & show clubs accordingly
+    $('#nextBtn').on('click', function () {
+        const email = $('#email').val().trim();
+        if (!email) {
+            alert('Please enter your email.');
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("student.user.clubs") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                email: email
+            },
+            success: function (response) {
+                if (response.status === 'found') {
+                    const techCount = response.tech_count;
+                    const nonTechCount = response.non_tech_count;
+
+                    $('#clubLimitInfo').text(`You have already registered in ${techCount} Technical and ${nonTechCount} Non-Technical clubs.`);
+
+                    const maxTech = 2;
+                    const maxNonTech = 1;
+
+                    if (nonTechCount >= maxNonTech) {
+                        $('input.club-checkbox[data-type="nontech"]').prop('disabled', true);
+                    } else {
+                        $('input.club-checkbox[data-type="nontech"]').prop('disabled', false);
+                    }
+
+                    if (techCount >= maxTech) {
+  $('input.club-checkbox[data-type="tech"]').prop('disabled', true);
+} else {
+  // Allowed remaining tech selections
+  const remaining = maxTech - techCount;
+
+  // Allow user to select only up to remaining tech clubs
+  // Attach change event to tech checkboxes to enforce limit dynamically
+  $('input.club-checkbox[data-type="tech"]').off('change').on('change', function () {
+    // Count how many tech checkboxes are currently checked
+    const checkedTech = $('input.club-checkbox[data-type="tech"]:checked').length;
+
+    if (checkedTech > remaining) {
+      // If user tries to select more than allowed, show alert and uncheck this box
+      alert(`limit reached`);
+      $(this).prop('checked', false);
+    }
+  });
+}
+
+                } else {
+                    // No registration found: enable all checkboxes
+                    $('#clubLimitInfo').text('');
+                    $('input.club-checkbox').prop('disabled', false);
+                }
+
+                // Show club selection, hide personal details — moved inside success callback properly
+                $('#personalDetailsStep').hide();
+                $('#clubSelectionStep').show();
+            },
+            error: function() {
+                alert('Error checking existing clubs. Please try again.');
+            }
+        });
+    });
+
+    // Reset form and steps if email is manually changed again
+    $('#email').on('input', function() {
+        $('#clubLimitInfo').text('');
+        $('input.club-checkbox').prop('disabled', false);
+        $('#clubSelectionStep').hide();
+        $('#personalDetailsStep').show();
+    });
+});
+</script>
+

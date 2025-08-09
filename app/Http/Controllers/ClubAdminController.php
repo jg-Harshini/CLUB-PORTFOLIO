@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationRejectedMail;
+use App\Mail\RegistrationSuccessMail;
 use App\Models\Club;
 use App\Models\Registration;
 use App\Models\Event;
@@ -91,6 +94,8 @@ public function enrollments(Request $request)
     return view('enrollments', compact('students', 'departments'));
 }
 
+
+
 public function approveOrRejectEnrollments(Request $request)
 {
     $request->validate([
@@ -102,8 +107,28 @@ public function approveOrRejectEnrollments(Request $request)
     $action = $request->input('action');
 
     if ($action === 'reject') {
-        DB::table('club_registration')->whereIn('id', $selectedIds)->delete();
-        $message = 'Selected students have been rejected.';
+        foreach ($selectedIds as $id) {
+            $clubReg = DB::table('club_registration')->where('id', $id)->first();
+            
+            if ($clubReg) {
+                $registration = \App\Models\Registration::find($clubReg->registration_id);
+                $club = \App\Models\Club::find($clubReg->club_id);
+
+                if ($registration && $club) {
+                    $data = [
+                        'name' => $registration->name,
+                        'club' => $club->club_name,
+                    ];
+
+                    Mail::to($registration->email)->send(new RegistrationRejectedMail($data));
+                }
+
+                // Delete the record after email
+                DB::table('club_registration')->where('id', $id)->delete();
+            }
+        }
+
+        $message = 'Selected students have been rejected and emails sent.';
     } else {
         $message = 'Selected students have been accepted.';
     }
@@ -117,6 +142,7 @@ public function approveOrRejectEnrollments(Request $request)
 
     return back()->with('success', $message);
 }
+
 
 
 
