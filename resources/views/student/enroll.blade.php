@@ -8,10 +8,15 @@
     <!-- Fonts & Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
 
     <style>
         * {
@@ -50,31 +55,33 @@
             z-index: -1;
         }
 
-        .navbar-custom {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: white;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            padding: 10px 0;
+        .nav-links {
+            display: flex;
+            gap: 40px;
         }
 
-        .nav-item {
-            text-align: center;
-            color: #333;
-            font-weight: 600;
+        .nav-link {
             text-decoration: none;
+            color: #2a5d9f;
+            font-weight: 600;
+            text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #2a5d9f;
         }
 
-        .nav-item:hover {
-            color: #0d6efd;
+        .nav-link svg {
+            width: 30px;
+            height: 30px;
+            stroke-width: 2.5;
+            margin-bottom: 5px;
+            transition: stroke 0.3s ease;
         }
-
         .form-wrapper {
             margin-top: 120px;
         }
@@ -188,9 +195,7 @@ label:not(.form-check-label) {
 </head>
 
 <body>
-    </div>
-    <!-- Normal Header (static) -->
-    <div style="
+      <div style="
   width: 100%;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -200,7 +205,7 @@ label:not(.form-check-label) {
         <div class="container d-flex align-items-center justify-content-between py-3">
 
             <!-- Logo -->
-            <a href="{{ route('student.index') }}"class="d-flex align-items-center text-decoration-none">
+            <a href="index.html" class="d-flex align-items-center text-decoration-none">
                 <img src="{{ asset('img/logo.jpg') }}" alt="Logo" style="height: 60px;">
             </a>
 
@@ -210,11 +215,11 @@ label:not(.form-check-label) {
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="home" style="stroke:#2A5D9F; width:36px; height:36px;"></i><br>Home
                 </a>
-                <a href="{{ route('student.commitee') }}" class="nav-item"
+               <a href="{{ route('student.commitee') }}" class="nav-item"
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="users" style="stroke:#W91G11; width:36px; height:36px;"></i><br>Commitee
                 </a>
-                <a href="about.html" class="nav-item"
+                <a href="{{ route('student.clubs.all') }}" class="nav-item"
                     style="text-align: center; color: black; text-decoration: none; font-weight: 600;">
                     <i data-feather="users" style="stroke:#E76F51; width:36px; height:36px;"></i><br>Clubs
                 </a>
@@ -502,5 +507,8 @@ $(document).ready(function () {
         $('#personalDetailsStep').show();
     });
 });
+
+feather.replace();
+
 </script>
 
