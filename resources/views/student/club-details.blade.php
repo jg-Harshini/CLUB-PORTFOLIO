@@ -201,6 +201,31 @@
             <p><strong>Email:</strong> <a href="mailto:{{ $club->staff_coordinator_email }}">{{ $club->staff_coordinator_email }}</a></p>
         </div>
     </div>
+<!-- Student Coordinators -->
+<div class="section" data-aos="fade-left" data-aos-delay="200">
+    <h3><i class="bi bi-people-fill me-2"></i>Student Coordinators</h3>
+    <div class="divider ms-0 me-auto"></div>
+
+    <div class="row mt-3">
+        @forelse($club->studentCoordinators as $student)
+            <div class="col-md-3 col-sm-4 col-6 mb-4 text">
+                <!--@if($student->photo)
+                    <img src="{{ asset('storage/' . $student->photo) }}"
+                         class="rounded-circle shadow border mb-2" width="120" height="120" style="object-fit: cover;">
+                @else
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow border mb-2"
+                         style="width: 120px; height: 120px;">
+                        <i class="bi bi-person-circle fs-1 text-muted"></i>
+                    </div>
+                @endif-->
+                <p class="fw-medium text-dark mb-0">{{ $student->name }}</p>
+            </div>
+        @empty
+            <div class="col-12 text-muted">No student coordinators listed.</div>
+        @endforelse
+    </div>
+</div>
+
 
     <!-- Founded Year -->
     <div class="section d-flex justify-content-between align-items-center" data-aos="zoom-in" data-aos-delay="200">

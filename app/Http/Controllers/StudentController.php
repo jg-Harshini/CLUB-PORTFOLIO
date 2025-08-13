@@ -45,7 +45,13 @@ class StudentController extends Controller
         // Get first 9 clubs alphabetically
         $clubs = Club::orderBy('club_name')->take(9)->get();
 
-        return view('student.index', compact('clubs', 'events'));
+           // Dynamic counter values
+    $clubsCount = Club::count();
+    $membersCount = Registration::count() + DB::table('student_coordinators')->count();
+    $eventsCount = Event::count();
+    $patentsCount = 48; // static
+
+    return view('student.index', compact('clubs', 'events', 'clubsCount', 'membersCount', 'eventsCount', 'patentsCount'));
     }
 
     public function committee()
@@ -92,17 +98,19 @@ class StudentController extends Controller
     }
 
     // 3. Show enroll form
-    public function showEnrollForm()
-    {
-        $clubs = Club::orderBy('club_name')->get();
-        $departments = [
-            'CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'AMCS', 'AI-ML',
-            'MECT', 'CSBS', 'ARCH'
-        ];
-        sort($departments);
 
-        return view('student.enroll', compact('clubs', 'departments'));
-    }
+public function showEnrollForm()
+{
+    $clubs = Club::orderBy('club_name')->get();
+
+    // Fetch departments from DB and sort alphabetically
+    $departments = DB::table('departments')
+        ->orderBy('name')
+        ->pluck('name'); // returns a collection of names
+
+    return view('student.enroll', compact('clubs', 'departments'));
+}
+
 
     public function getUserClubs(Request $request)
     {

@@ -55,22 +55,22 @@
                 <h4 class="fw-semibold mb-4" style="color: #003366;">Student Coordinators</h4>
                 <div class="row">
                     @forelse ($club->studentCoordinators as $student)
-                        <!--div class="col-md-3 col-sm-4 col-6 mb-4 text-center">
+                        <div class="col-md-3 col-sm-4 col-6 mb-4 text-center">
                             <div class="d-flex flex-column align-items-center">
-                                @if ($student->photo)
+                                <!--@if ($student->photo)
                                     <img src="{{ asset('storage/' . $student->photo) }}" 
                                          class="rounded-circle shadow border mb-2"
                                          width="140" height="140"
                                          style="object-fit: cover;" 
-                                         alt="Student Photo">
-                                @else
+                                         alt="Student Photo"-->
+                                <!--@else
                                     <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow border mb-2"
                                          style="width: 120px; height: 120px;">
                                         <i class="bi bi-person-circle fs-1 text-muted"></i>
                                     </div>
-                                @endif
+                                @endif-->
                             </div>
-                        </div-->
+                        </div>
                                                         <p class="fw-medium text-dark mb-0">{{ $student->name }}</p>
 
                     @empty

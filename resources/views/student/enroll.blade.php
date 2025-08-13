@@ -305,13 +305,16 @@ label:not(.form-check-label) {
     </div>
 </div>
 
-    <label>Department:</label>
-    <select name="department" class="form-select" required>
-        <option value="" disabled selected>Select your department</option>
+   <div class="mb-3">
+    <label for="department" class="form-label">Department</label>
+    <select name="department" id="department" class="form-select" required>
+        <option value="">Select Department</option>
         @foreach ($departments as $dept)
-            <option value="{{ $dept }}" {{ old('department') == $dept ? 'selected' : '' }}>{{ $dept }}</option>
+            <option value="{{ $dept }}">{{ $dept }}</option>
         @endforeach
     </select>
+</div>
+
       <button type="button" id="nextBtn">Next</button>
 </div>
 <div id="clubSelectionStep" style="display:none;">

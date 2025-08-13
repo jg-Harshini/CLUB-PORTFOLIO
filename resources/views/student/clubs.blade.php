@@ -191,7 +191,6 @@
 
 <!-- Clubs Section -->
 <div class="container-fluid club-section">
-  <h5>CLUBS</h5>
   <h1>Explore the clubs at TCE</h1>
   <p>
     Explore the vibrant student clubs at TCE that spark innovation, leadership, and creativity.<br>

@@ -236,6 +236,118 @@
     color: white;
     border-color: #800000;
 }
+.club-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 50px 40px;
+      padding: 0 15px;
+    }
+
+    .club-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background-color: #f8f9fa;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .club-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .club-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: wrap;
+      transition: transform 0.4s ease, filter 0.4s ease;
+    }
+
+    .club-card:hover img {
+      transform: scale(1.1);
+      filter: blur(3px) brightness(70%);
+    }
+
+    .club-name-overlay {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: #063c64;
+      color: white;
+      font-weight: bold;
+      padding: 10px 0;
+      font-size: 1.05rem;
+      z-index: 1;
+    }
+
+    .club-details {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 75%;
+      background-color: rgba(255, 255, 255, 0.97);
+      padding: 15px 15px 10px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: all 0.4s ease-in-out;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .club-card:hover .club-details {
+      opacity: 1;
+      transform: translateY(0%);
+    }
+
+    .club-details h5 {
+      color: #800000;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .club-details p {
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.3;
+      max-height: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .club-details a {
+      padding: 7px 20px;
+      background-color: #800000;
+      color: white;
+      border-radius: 25px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      align-self: center;
+    }
+
+    .club-details a:hover {
+      background-color: #a52a2a;
+    }
+
+    @media (max-width: 768px) {
+      .club-section h1 {
+        font-size: 1.7rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .club-card {
+        aspect-ratio: 3 / 3;
+      }
+    }
+    
 </style>
 
 
@@ -420,45 +532,19 @@
                     creativity.</br>Join communities that empower you beyond academics through tech, culture, and more.
                 </p>
             </div>
-            <div class="row g-4">
-                @foreach($clubs as $index => $club)
-                <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="service-item">
-                        <div class="service-inner">
-                            <div class="service-img">
-                                <img src="{{ asset('storage/' . $club->logo) }}" class="img-fluid w-100 rounded" alt="Image">
-                            </div>
-                            <div class="service-title">
-                                <div class="service-title-name">
-                                    <div class="text-center rounded p-3 mx-5 mb-4" style="background-color: #063c64;">
-                                        <a href="#" class="h4 text-white mb-0"
-                                            style="text-decoration: none;">{{$club->club_name}}</a>
-                                    </div>
-
-
-
-                                </div>
-                                <div class="service-content pb-4" style="background-color: white; color: black;">
-                                    <a href="#" style="color: black;">
-                                        <h4 class="mb-4 py-3" style="color: black;">{{$club->club_name}}</h4>
-                                    </a>
-                                    <div class="px-4">
-                                        <p class="mb-4" style="color: black;">
-                                            {{$club->introduction}}
-                                        </p>
-                                        <a href="{{ route('student.clubs.show', ['id' => $club->id]) }}" class="btn rounded-pill py-3 px-5"
-                                            style="background-color: #800000; color: white;">Explore More</a>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                @endforeach
-               
+                 <div class="club-grid">
+    @foreach($clubs->take(9) as $club)
+      <div class="club-card" data-aos="fade-up">
+        <img src="{{ asset('storage/' . $club->logo) }}" alt="{{ $club->club_name }}">
+        <div class="club-name-overlay" style="text-align: center";>{{ $club->club_name }}</div>
+        <div class="club-details">
+          <h5>{{ $club->club_name }}</h5>
+          <p>{{ \Illuminate\Support\Str::limit($club->introduction, 120) }}</p>
+          <a href="{{ route('student.clubs.show', ['id' => $club->id]) }}">Explore More</a>
+        </div>
+      </div>
+    @endforeach
+  </div>
 {{-- View More Button --}}
 <div class="text-center mt-4">
         <a href="{{ route('student.clubs.all') }}" class="carousel-btn">View More</a>
@@ -477,7 +563,7 @@
                     <div class="p-4 bg-white rounded-4 shadow-sm h-100">
                         <i class="fas fa-layer-group fa-3x mb-3" style="color: #b8860b;"></i>
                         <h5 class="fw-semibold mb-2" style="color: #b8860b;">Clubs</h5>
-                        <h2 class="mb-0 fw-bold counter" data-target="27" style="color: #333;">0</h2>
+<h2 class="mb-0 fw-bold counter" data-target="{{ $clubsCount }}" style="color: #333;">0</h2>
                     </div>
                 </div>
 
@@ -485,7 +571,7 @@
                     <div class="p-4 bg-white rounded-4 shadow-sm h-100">
                         <i class="fas fa-users fa-3x mb-3" style="color: #b8860b;"></i>
                         <h5 class="fw-semibold mb-2" style="color: #b8860b;">Members</h5>
-                        <h2 class="mb-0 fw-bold counter" data-target="400" style="color: #333;">0</h2>
+<h2 class="mb-0 fw-bold counter" data-target="{{ $membersCount }}" style="color: #333;">0</h2>
                     </div>
                 </div>
 
@@ -493,7 +579,7 @@
                     <div class="p-4 bg-white rounded-4 shadow-sm h-100">
                         <i class="far fa-calendar-alt fa-3x mb-3" style="color: #b8860b;"></i>
                         <h5 class="fw-semibold mb-2" style="color: #b8860b;">Events</h5>
-                        <h2 class="mb-0 fw-bold counter" data-target="100" style="color: #333;">0</h2>
+<h2 class="mb-0 fw-bold counter" data-target="{{ $eventsCount }}" style="color: #333;">0</h2>
                     </div>
                 </div>
 
@@ -501,7 +587,7 @@
                     <div class="p-4 bg-white rounded-4 shadow-sm h-100">
                         <i class="fas fa-lightbulb fa-3x mb-3" style="color: #b8860b;"></i>
                         <h5 class="fw-semibold mb-2" style="color: #b8860b;">Patents</h5>
-                        <h2 class="mb-0 fw-bold counter" data-target="42" style="color: #333;">0</h2>
+<h2 class="mb-0 fw-bold counter" data-target="{{ $patentsCount }}" style="color: #333;">0</h2>
                     </div>
                 </div>
 
