@@ -12,10 +12,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('registration_id');
             $table->unsignedBigInteger('club_id');
             $table->timestamps();
-
-            // Optional: add foreign key constraints if needed
-            // $table->foreign('registration_id')->references('id')->on('registrations')->onDelete('cascade');
-            // $table->foreign('club_id')->references('id')->on('clubs')->onDelete('cascade');
         });
     }
 

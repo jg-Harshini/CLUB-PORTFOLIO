@@ -49,7 +49,7 @@
         </h6>
         <div class="fs-6 text-dark">
             {{ \Carbon\Carbon::parse($event->start_time)->format('h:i A') }} -
-            {{ \Carbon\Carbon::parse($event->start_time)->format('h:i A') }}
+            {{ \Carbon\Carbon::parse($event->end_time)->format('h:i A') }}
         </div>
     </div>
 </div>

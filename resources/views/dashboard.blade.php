@@ -4,7 +4,7 @@
 @section('content')
 <div class="row mb-4">
   <div class="col-12">
-    <<h3 class="text-dark fw-bold mt-0">{{ $clubName }} Dashboard</h3>
+    <h3 class="text-dark fw-bold mt-0">{{ $clubName }} Dashboard</h3>
 <p class="text-muted">Analytics for department and gender distribution within the {{ $clubName }}</p>
 
   </div>

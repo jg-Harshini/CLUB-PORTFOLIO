@@ -74,14 +74,16 @@ public function enrollments(Request $request)
 {
     $clubId = Auth::user()->club_id;
 
-    $query = Registration::select(
-            'registrations.name',
-            'registrations.roll_no',
-            'registrations.department',
-            'club_registration.id as club_reg_id' // 👈 added for checkbox value
-        )
-        ->join('club_registration', 'registrations.id', '=', 'club_registration.registration_id')
-        ->where('club_registration.club_id', $clubId);
+$query = Registration::select(
+    'registrations.name',
+    'registrations.roll_no',
+    'registrations.department',
+    'club_registration.id as club_reg_id',
+    'club_registration.status' // 👈 add this line
+)
+->join('club_registration', 'registrations.id', '=', 'club_registration.registration_id')
+->where('club_registration.club_id', $clubId);
+
 
     $departmentFilter = $request->query('department');
     if ($departmentFilter) {
@@ -120,7 +122,7 @@ public function approveOrRejectEnrollments(Request $request)
                         'club' => $club->club_name,
                     ];
 
-                    Mail::to($registration->email)->send(new RegistrationRejectedMail($data));
+Mail::to($registration->email)->queue(new RegistrationRejectedMail($data));
                 }
 
                 // Delete the record after email
@@ -130,6 +132,7 @@ public function approveOrRejectEnrollments(Request $request)
 
         $message = 'Selected students have been rejected and emails sent.';
     } else {
+        DB::table('club_registration')->whereIn('id', $selectedIds)->update(['status' => 'accepted']);
         $message = 'Selected students have been accepted.';
     }
 

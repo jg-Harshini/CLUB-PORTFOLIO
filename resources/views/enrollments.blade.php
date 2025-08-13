@@ -34,16 +34,23 @@
                 <th>Department</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach ($students as $student)
-                <tr>
-                    <td><input type="checkbox" name="selected_ids[]" value="{{ $student->club_reg_id }}"></td>
-                    <td>{{ $student->roll_no }}</td>
-                    <td>{{ $student->name }}</td>
-                    <td>{{ $student->department }}</td>
-                </tr>
-            @endforeach
-        </tbody>
+<tbody>
+    @foreach ($students as $student)
+        <tr>
+            <td>
+                @if ($student->status === 'accepted')
+                    <span class="accepted-label" style="margin-left:6px; color:green; font-weight:bold;">Accepted</span>
+                @else
+                    <input type="checkbox" name="selected_ids[]" value="{{ $student->club_reg_id }}">
+                @endif
+            </td>
+            <td>{{ $student->roll_no }}</td>
+            <td>{{ $student->name }}</td>
+            <td>{{ $student->department }}</td>
+        </tr>
+    @endforeach
+</tbody>
+
     </table>
     <div class="mt-3">
         <button type="button" class="btn btn-success" onclick="submitBulkAction('accept')">Accept Selected</button>
@@ -61,46 +68,50 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
 $(document).ready(function () {
-  const table = $('#clubTable').DataTable();
+    const table = $('#clubTable').DataTable();
 
-  function updateExportLinks() {
-    const dept = $('#deptFilter').val();
-    let pdfUrl = '{{ route("clubadmin.export.pdf") }}';
-    let excelUrl = '{{ route("clubadmin.export.excel") }}';
+    function updateExportLinks() {
+        const dept = $('#deptFilter').val();
+        let pdfUrl = '{{ route("clubadmin.export.pdf") }}';
+        let excelUrl = '{{ route("clubadmin.export.excel") }}';
 
-    const params = new URLSearchParams();
-    if (dept) params.append('dept', dept);
+        const params = new URLSearchParams();
+        if (dept) params.append('dept', dept);
 
-    if (params.toString()) {
-      pdfUrl += '?' + params.toString();
-      excelUrl += '?' + params.toString();
+        if (params.toString()) {
+            pdfUrl += '?' + params.toString();
+            excelUrl += '?' + params.toString();
+        }
+
+        $('#pdfExport').attr('href', pdfUrl);
+        $('#excelExport').attr('href', excelUrl);
     }
 
-    $('#pdfExport').attr('href', pdfUrl);
-    $('#excelExport').attr('href', excelUrl);
-  }
-
-  $('#deptFilter').on('change', function () {
-    const dept = $(this).val().toLowerCase();
-    table.rows().every(function () {
-      const data = this.data();
-      const match = !dept || data[2].toLowerCase() === dept;
-      $(this.node()).toggle(match);
+    $('#deptFilter').on('change', function () {
+        const dept = $(this).val().toLowerCase();
+        table.rows().every(function () {
+            const data = this.data();
+            const match = !dept || data[2].toLowerCase() === dept;
+            $(this.node()).toggle(match);
+        });
+        updateExportLinks();
     });
-    updateExportLinks();
-  });
 
-  updateExportLinks();
-});
-document.getElementById('selectAll').addEventListener('change', function() {
-    document.querySelectorAll('input[name="selected_ids[]"]').forEach(cb => cb.checked = this.checked);
+    updateExportLinks();
+
+    // Select/Deselect all checkboxes
+    $('#selectAll').on('change', function() {
+        $('input[name="selected_ids[]"]').prop('checked', this.checked);
+    });
 });
 
 function submitBulkAction(action) {
-    let selected = Array.from(document.querySelectorAll('input[name="selected_ids[]"]:checked'))
-        .map(cb => cb.value);
+    let selected = $('input[name="selected_ids[]"]:checked').map(function() {
+        return $(this).val();
+    }).get();
 
     if (selected.length === 0) {
         Swal.fire({
@@ -113,29 +124,45 @@ function submitBulkAction(action) {
 
     $.ajax({
         url: "{{ route('clubadmin.enrollments.action') }}",
-        method: "POST",
+        type: "POST",
         data: {
             _token: "{{ csrf_token() }}",
-            action: action,
-            selected_ids: selected
+            selected_ids: selected,
+            action: action
         },
-        success: function (response) {
-            // Remove rejected rows instantly
-            if (action === 'reject') {
-                selected.forEach(id => {
-                    $('input[value="' + id + '"]').closest('tr').remove();
+        success: function(response) {
+            if (response.status === 'success') {
+                if (action === 'reject') {
+                    // Remove rejected rows
+                    selected.forEach(function(id) {
+                        $('input[value="' + id + '"]').closest('tr').remove();
+                    });
+                } 
+                else if (action === 'accept') {
+                    // Mark accepted visually without removing
+                    selected.forEach(function(id) {
+                        let checkbox = $('input[value="' + id + '"]');
+                        checkbox.prop('checked', false)
+                                .prop('disabled', true)
+                                .css({ cursor: 'not-allowed', opacity: '0.5' });
+                        if (!checkbox.parent().find('.accepted-label').length) {
+                            checkbox.parent().append(
+                                '<span class="accepted-label" style="margin-left:6px; color:green; font-weight:bold;">Accepted</span>'
+                            );
+                        }
+                    });
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Done',
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.message,
-                timer: 2000,
-                showConfirmButton: false
-            });
         },
-        error: function () {
+        error: function() {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -144,8 +171,5 @@ function submitBulkAction(action) {
         }
     });
 }
-
-
 </script>
-
 @endsection
