@@ -318,13 +318,13 @@ label:not(.form-check-label) {
   <div id="clubLimitInfo"></div>
 
 
-    <label>Select Clubs (Min: 1 Tech + 1 Non-Tech | Max: 2 Tech + 1 Non-Tech):</label>
+    <label>Select Clubs (2 Tech + 1 Non-Tech):</label>
 <br>
 <label>Technical Clubs</label>
 <div class="checkbox-group">
     @foreach($clubs->where('category', 'technical') as $club)
         <label class="form-check-label">
-            <input type="checkbox" name="clubs[]" value="{{ $club->id }}" class="form-check-input club-checkbox" data-type="tech"
+            <input type="checkbox" name="clubs[]" value="{{ $club->id }}" class="form-check-input club-checkbox" data-type="technical"
                 {{ is_array(old('clubs')) && in_array($club->id, old('clubs')) ? 'checked' : '' }}>
             {{ $club->club_name }}
         </label>
@@ -335,7 +335,7 @@ label:not(.form-check-label) {
 <div class="checkbox-group">
     @foreach($clubs->where('category', 'non-technical') as $club)
         <label class="form-check-label">
-            <input type="checkbox" name="clubs[]" value="{{ $club->id }}" class="form-check-input club-checkbox" data-type="nontech"
+            <input type="checkbox" name="clubs[]" value="{{ $club->id }}" class="form-check-input club-checkbox" data-type="non-technical"
                 {{ is_array(old('clubs')) && in_array($club->id, old('clubs')) ? 'checked' : '' }}>
             {{ $club->club_name }}
         </label>
@@ -423,16 +423,85 @@ label:not(.form-check-label) {
     </div>
   </div>
 </footer>
+<!-- Limit Alert Modal -->
+<div class="modal fade" id="limitAlertModal" tabindex="-1" aria-labelledby="limitAlertModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="limitAlertModalLabel">Selection Limit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="limitAlertMessage"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+function showLimitPopup(message) {
+    $('#limitAlertMessage').html(message);
+    var limitModal = new bootstrap.Modal(document.getElementById('limitAlertModal'));
+    limitModal.show();
+}
+
 $(document).ready(function () {
-    // When user changes email input, clear club info and enable all checkboxes
+    const maxTech = 2;
+    const maxNonTech = 1;
+    let isReRegistration = false; // track if user already registered
+
+    // Limit checkbox selection counts live
+    $('input.club-checkbox').on('change', function () {
+        const techChecked = $('input.club-checkbox[data-type="technical"]:checked').length;
+        const nonTechChecked = $('input.club-checkbox[data-type="non-technical"]:checked').length;
+
+        if (techChecked > maxTech && $(this).data('type') === 'technical') {
+            alert(`You can select only ${maxTech} Technical clubs.`);
+            $(this).prop('checked', false);
+        }
+
+        if (nonTechChecked > maxNonTech && $(this).data('type') === 'non-technical') {
+            alert(`You can select only ${maxNonTech} Non-Technical club.`);
+            $(this).prop('checked', false);
+        }
+    });
+
+    // Submit form validation
+    $('#clubForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const techChecked = $('input.club-checkbox[data-type="technical"]:checked').length;
+        const nonTechChecked = $('input.club-checkbox[data-type="non-technical"]:checked').length;
+
+        // Only enforce minimum if NOT re-registration
+        if (!isReRegistration) {
+            if (techChecked < 2 || nonTechChecked < 1) {
+                let message = '';
+                if (techChecked < 2) {
+                    message += `Please select 2 Technical clubs.<br>`;
+                }
+                if (nonTechChecked < 1) {
+                    message += `Please select 1 Non-Technical club.`;
+                }
+                showLimitPopup(message);
+                return false; // stop submission
+            }
+        }
+
+        this.submit(); // submit if validation passed or re-registration
+    });
+
+    // Clear info and enable checkboxes on email change
     $('#email').on('change', function () {
         $('#clubLimitInfo').text('');
         $('input.club-checkbox').prop('disabled', false);
     });
 
-    // Next button click handler - check existing registrations & show clubs accordingly
+    // Check existing registrations on Next button click
     $('#nextBtn').on('click', function () {
         const email = $('#email').val().trim();
         if (!email) {
@@ -449,47 +518,40 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status === 'found') {
+                    isReRegistration = true; // user exists — re-registration mode
                     const techCount = response.tech_count;
                     const nonTechCount = response.non_tech_count;
 
                     $('#clubLimitInfo').text(`You have already registered in ${techCount} Technical and ${nonTechCount} Non-Technical clubs.`);
 
-                    const maxTech = 2;
-                    const maxNonTech = 1;
-
                     if (nonTechCount >= maxNonTech) {
-                        $('input.club-checkbox[data-type="nontech"]').prop('disabled', true);
+                        $('input.club-checkbox[data-type="non-technical"]').prop('disabled', true);
                     } else {
-                        $('input.club-checkbox[data-type="nontech"]').prop('disabled', false);
+                        $('input.club-checkbox[data-type="non-technical"]').prop('disabled', false);
                     }
 
                     if (techCount >= maxTech) {
-  $('input.club-checkbox[data-type="tech"]').prop('disabled', true);
-} else {
-  // Allowed remaining tech selections
-  const remaining = maxTech - techCount;
+                        $('input.club-checkbox[data-type="technical"]').prop('disabled', true);
+                    } else {
+                        const remaining = maxTech - techCount;
 
-  // Allow user to select only up to remaining tech clubs
-  // Attach change event to tech checkboxes to enforce limit dynamically
-  $('input.club-checkbox[data-type="tech"]').off('change').on('change', function () {
-    // Count how many tech checkboxes are currently checked
-    const checkedTech = $('input.club-checkbox[data-type="tech"]:checked').length;
+                        $('input.club-checkbox[data-type="technical"]').prop('disabled', false);
 
-    if (checkedTech > remaining) {
-      // If user tries to select more than allowed, show alert and uncheck this box
-      alert(`limit reached`);
-      $(this).prop('checked', false);
-    }
-  });
-}
-
+                        // Re-attach change event to enforce max limit dynamically
+                        $('input.club-checkbox[data-type="technical"]').off('change').on('change', function () {
+                            const checkedTech = $('input.club-checkbox[data-type="technical"]:checked').length;
+                            if (checkedTech > remaining) {
+                                alert(`Limit reached: You can select only ${remaining} Technical clubs.`);
+                                $(this).prop('checked', false);
+                            }
+                        });
+                    }
                 } else {
-                    // No registration found: enable all checkboxes
+                    isReRegistration = false; // no previous registration
                     $('#clubLimitInfo').text('');
                     $('input.club-checkbox').prop('disabled', false);
                 }
 
-                // Show club selection, hide personal details — moved inside success callback properly
                 $('#personalDetailsStep').hide();
                 $('#clubSelectionStep').show();
             },
@@ -499,8 +561,9 @@ $(document).ready(function () {
         });
     });
 
-    // Reset form and steps if email is manually changed again
+    // Reset on email input change
     $('#email').on('input', function() {
+        isReRegistration = false; // reset flag
         $('#clubLimitInfo').text('');
         $('input.club-checkbox').prop('disabled', false);
         $('#clubSelectionStep').hide();
@@ -509,6 +572,4 @@ $(document).ready(function () {
 });
 
 feather.replace();
-
 </script>
-
