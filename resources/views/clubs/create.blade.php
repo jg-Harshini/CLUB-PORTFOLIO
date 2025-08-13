@@ -114,10 +114,28 @@
             <button type="button" class="btn btn-sm btn-outline-primary" onclick="addStudent()">+ Add Another</button>
         </div>
     </div>
+<!-- Existing club fields -->
+
+<h4>Club Admin Details</h4>
+<div class="form-group">
+    <label for="admin_name">Admin Name</label>
+    <input type="text" name="admin_name" id="admin_name" class="form-control" autocomplete="off" required>
+</div>
+
+<div class="form-group">
+    <label for="admin_email">Admin Email</label>
+    <input type="email" name="admin_email" id="admin_email" class="form-control" autocomplete="off" required>
+</div>
+
+<div class="form-group">
+    <label for="admin_password">Admin Password</label>
+    <input type="password" name="admin_password" id="admin_password" class="form-control" autocomplete="new-password" required>
+</div>
 
     <div class="text-end">
         <button type="submit" class="btn btn-primary" style="background-color: #4d9de0; border: none;">Add Club</button>
     </div>
+    
 </form>
 
 <script>

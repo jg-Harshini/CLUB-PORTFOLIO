@@ -29,5 +29,8 @@ class Club extends Model
 {
     return $this->hasMany(\App\Models\Event::class);
 }
+public function user() {
+    return $this->hasOne(User::class, 'club_id')->where('role', 'club_admin');
+}
 
 }

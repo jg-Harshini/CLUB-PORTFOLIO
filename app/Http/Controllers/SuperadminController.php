@@ -8,13 +8,14 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Club;
 use App\Models\Event;
 use App\Models\StudentCoordinator;
-
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 class SuperadminController extends Controller
 {
     public function clubs(Request $request, $action = null, $id = null)
     {
         switch ($action) {
-           case 'create':
+         case 'create':
     if ($request->isMethod('post')) {
         $request->validate([
             'club_name' => 'required|string|max:255',
@@ -25,18 +26,20 @@ class SuperadminController extends Controller
             'staff_coordinator_email' => 'nullable|email|max:255',
             'staff_coordinator_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'year_started' => 'required|integer',
-            'department_id' => 'required|exists:departments,id', // ✅ Correct validation
+            'department_id' => 'required|exists:departments,id',
             'category' => 'required|string|in:Technical,Non-Technical',
+            'admin_name' => 'required|string|max:255',
+            'admin_email' => 'required|email|unique:users,email',
+            'admin_password' => 'required|string|min:6',
         ]);
 
-        $departmentId = $request->department_id; // ✅ Assign valid department ID
-
+        $departmentId = $request->department_id;
         $logoPath = $request->file('logo')->store('club_logos', 'public');
         $staffPhotoPath = $request->hasFile('staff_coordinator_photo')
             ? $request->file('staff_coordinator_photo')->store('staff_photos', 'public')
             : null;
 
-        Club::create([
+        $club = Club::create([
             'club_name' => $request->club_name,
             'logo' => $logoPath,
             'introduction' => $request->introduction,
@@ -45,80 +48,107 @@ class SuperadminController extends Controller
             'staff_coordinator_email' => $request->staff_coordinator_email,
             'staff_coordinator_photo' => $staffPhotoPath,
             'year_started' => $request->year_started,
-            'department_id' => $departmentId, // ✅ Use correct ID here
+            'department_id' => $departmentId,
             'category' => $request->category,
         ]);
 
-        return redirect()->back()->with('success', 'Club created successfully!');
+        User::create([
+            'name' => $request->admin_name,
+            'email' => $request->admin_email,
+            'password' => Hash::make($request->admin_password),
+            'role' => 'club_admin',
+            'club_id' => $club->id,
+        ]);
+
+        // ✅ Redirect to index with success message
+        return redirect()
+            ->route('superadmin.clubs', ['action' => 'index'])
+            ->with('success', 'Club created successfully!');
     }
 
     return view('clubs.create');
 
 
-            case 'edit':
-                $club = Club::findOrFail($id);
+    case 'edit':
+    $club = Club::findOrFail($id);
+    $clubAdmin = User::where('club_id', $club->id)->where('role', 'club_admin')->first();
 
-                if ($request->isMethod('post')) {
-                    $request->validate([
-                        'club_name' => 'required|string|max:255',
-                        'staff_coordinator_email' => 'required|email',
-                    ]);
+    if ($request->isMethod('post')) {
+        $request->validate([
+            'club_name' => 'required|string|max:255',
+            'staff_coordinator_email' => 'required|email',
+            'admin_name' => 'required|string|max:255',
+            'admin_email' => 'required|email|unique:users,email,' . ($clubAdmin->id ?? 'NULL'),
+            'department_id' => 'required|exists:departments,id',
+            'category' => 'required|in:Technical,Non-Technical',
+        ]);
 
-                    $club->club_name = $request->club_name;
-                    $club->introduction = $request->introduction;
-                    $club->mission = $request->mission;
-                    $club->staff_coordinator_name = $request->staff_coordinator_name;
-                    $club->staff_coordinator_email = $request->staff_coordinator_email;
-                    $club->year_started = $request->year_started;
+        // Update Club
+        $club->club_name = $request->club_name;
+        $club->introduction = $request->introduction;
+        $club->mission = $request->mission;
+        $club->staff_coordinator_name = $request->staff_coordinator_name;
+        $club->staff_coordinator_email = $request->staff_coordinator_email;
+        $club->year_started = $request->year_started;
+        $club->department_id = $request->department_id;
+        $club->category = $request->category;
 
-                    if ($request->hasFile('logo')) {
-                        Storage::disk('public')->delete($club->logo);
-                        $club->logo = $request->file('logo')->store('club_logos', 'public');
+        if ($request->hasFile('logo')) {
+            Storage::disk('public')->delete($club->logo);
+            $club->logo = $request->file('logo')->store('club_logos', 'public');
+        }
+
+        if ($request->hasFile('staff_coordinator_photo')) {
+            Storage::disk('public')->delete($club->staff_coordinator_photo);
+            $club->staff_coordinator_photo = $request->file('staff_coordinator_photo')->store('staff_photos', 'public');
+        }
+
+        $club->save();
+
+        // Update Club Admin
+        if ($clubAdmin) {
+            $clubAdmin->name = $request->admin_name;
+            $clubAdmin->email = $request->admin_email;
+            if ($request->admin_password) {
+                $clubAdmin->password = Hash::make($request->admin_password);
+            }
+            $clubAdmin->save();
+        }
+
+        // Update Student Coordinators (same logic as before)
+        $studentIds = $request->student_ids ?? [];
+        $studentNames = $request->student_names ?? [];
+        $studentPhotos = $request->file('student_photos') ?? [];
+
+        foreach ($studentNames as $index => $name) {
+            $studentId = $studentIds[$index] ?? null;
+
+            if ($studentId) {
+                $student = StudentCoordinator::find($studentId);
+                if ($student) {
+                    $student->name = $name;
+                    if (isset($studentPhotos[$index])) {
+                        Storage::disk('public')->delete($student->photo);
+                        $student->photo = $studentPhotos[$index]->store('student_photos', 'public');
                     }
-
-                    if ($request->hasFile('staff_coordinator_photo')) {
-                        Storage::disk('public')->delete($club->staff_coordinator_photo);
-                        $club->staff_coordinator_photo = $request->file('staff_coordinator_photo')->store('staff_photos', 'public');
-                    }
-
-                    $club->save();
-
-                    $studentIds = $request->student_ids ?? [];
-                    $studentNames = $request->student_names ?? [];
-                    $studentPhotos = $request->file('student_photos') ?? [];
-
-                    foreach ($studentNames as $index => $name) {
-                        $studentId = $studentIds[$index] ?? null;
-
-                        if ($studentId) {
-                            $student = StudentCoordinator::find($studentId);
-                            if ($student) {
-                                $student->name = $name;
-
-                                if (isset($studentPhotos[$index])) {
-                                    Storage::disk('public')->delete($student->photo);
-                                    $student->photo = $studentPhotos[$index]->store('student_photos', 'public');
-                                }
-
-                                $student->save();
-                            }
-                        } elseif ($name) {
-                            $newStudent = new StudentCoordinator();
-                            $newStudent->name = $name;
-                            $newStudent->club_id = $club->id;
-
-                            if (isset($studentPhotos[$index])) {
-                                $newStudent->photo = $studentPhotos[$index]->store('student_photos', 'public');
-                            }
-
-                            $newStudent->save();
-                        }
-                    }
-
-                    return redirect('/tce/superadmin/clubs')->with('success', 'Club updated successfully!');
+                    $student->save();
                 }
+            } elseif ($name) {
+                $newStudent = new StudentCoordinator();
+                $newStudent->name = $name;
+                $newStudent->club_id = $club->id;
+                if (isset($studentPhotos[$index])) {
+                    $newStudent->photo = $studentPhotos[$index]->store('student_photos', 'public');
+                }
+                $newStudent->save();
+            }
+        }
 
-                return view('clubs.edit', compact('club'));
+        return redirect('/tce/superadmin/clubs')->with('success', 'Club updated successfully!');
+    }
+
+    return view('clubs.edit', compact('club', 'clubAdmin'));
+
 
             case 'delete':
                 $club = Club::findOrFail($id);

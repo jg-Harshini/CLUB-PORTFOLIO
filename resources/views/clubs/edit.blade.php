@@ -82,6 +82,33 @@
                 <input type="number" name="year_started" value="{{ $club->year_started }}" class="form-control" required>
             </div>
         </div>
+@php
+    $departments = DB::table('departments')->orderBy('name')->get();
+@endphp
+
+<div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Department</label>
+    <div class="col-sm-9">
+        <select name="department_id" class="form-select" required>
+            <option value="">Select Department</option>
+            @foreach ($departments as $dept)
+                <option value="{{ $dept->id }}" {{ $club->department_id == $dept->id ? 'selected' : '' }}>
+                    {{ $dept->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+</div>
+<div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Category</label>
+    <div class="col-sm-9">
+        <select name="category" class="form-select" required>
+            <option value="">Select Category</option>
+            <option value="Technical" {{ $club->category == 'Technical' ? 'selected' : '' }}>Technical</option>
+            <option value="Non-Technical" {{ $club->category == 'Non-Technical' ? 'selected' : '' }}>Non-Technical</option>
+        </select>
+    </div>
+</div>
 
         {{-- Student Coordinators --}}
         <div class="mb-3 row">
@@ -112,6 +139,25 @@
                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="addStudent()">+ Add Another</button>
             </div>
         </div>
+@php
+    $clubAdmin = $club->user; // assuming Club model has user() relationship for club_admin
+@endphp
+
+<h4>Club Admin Details</h4>
+<div class="form-group mb-3">
+    <label for="admin_name">Admin Name</label>
+    <input type="text" name="admin_name" class="form-control" value="{{ $clubAdmin->name ?? '' }}" required>
+</div>
+
+<div class="form-group mb-3">
+    <label for="admin_email">Admin Email</label>
+    <input type="email" name="admin_email" class="form-control" value="{{ $clubAdmin->email ?? '' }}" required>
+</div>
+
+<div class="form-group mb-3">
+    <label for="admin_password">Admin Password (leave blank if unchanged)</label>
+    <input type="password" name="admin_password" class="form-control" autocomplete="new-password">
+</div>
 
         {{-- Submit --}}
         <div class="text-end">
