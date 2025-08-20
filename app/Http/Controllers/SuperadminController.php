@@ -88,17 +88,16 @@ class SuperadminController extends Controller
         $request->validate([
             'club_name' => 'required|string|max:255',
             'staff_coordinator_email' => 'required|email',
-            // ✅ add second staff validation
             'staff_coordinator2_name' => 'nullable|string|max:255',
             'staff_coordinator2_email' => 'nullable|email|max:255',
             'staff_coordinator2_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email,' . ($clubAdmin->id ?? 'NULL'),
             'department_id' => 'required|exists:departments,id',
             'category' => 'required|in:Technical,Non-Technical',
         ]);
 
+        // Club admin update or create
         if ($clubAdmin) {
             $clubAdmin->name = $request->admin_name;
             $clubAdmin->email = $request->admin_email;
@@ -118,7 +117,7 @@ class SuperadminController extends Controller
             ]);
         }
 
-        // ✅ make sure we actually update the non-file fields
+        // Update non-file fields
         $club->club_name = $request->club_name;
         $club->introduction = $request->introduction;
         $club->mission = $request->mission;
@@ -130,27 +129,31 @@ class SuperadminController extends Controller
         $club->department_id = $request->department_id;
         $club->category = $request->category;
 
+        // File handling with safe delete
         if ($request->hasFile('logo')) {
-            Storage::disk('public')->delete($club->logo);
+            if (!empty($club->logo)) {
+                Storage::disk('public')->delete($club->logo);
+            }
             $club->logo = $request->file('logo')->store('club_logos', 'public');
         }
 
         if ($request->hasFile('staff_coordinator_photo')) {
-            Storage::disk('public')->delete($club->staff_coordinator_photo);
+            if (!empty($club->staff_coordinator_photo)) {
+                Storage::disk('public')->delete($club->staff_coordinator_photo);
+            }
             $club->staff_coordinator_photo = $request->file('staff_coordinator_photo')->store('staff_photos', 'public');
         }
 
-        // ✅ handle second staff photo on edit
         if ($request->hasFile('staff_coordinator2_photo')) {
-            Storage::disk('public')->delete($club->staff_coordinator2_photo);
+            if (!empty($club->staff_coordinator2_photo)) {
+                Storage::disk('public')->delete($club->staff_coordinator2_photo);
+            }
             $club->staff_coordinator2_photo = $request->file('staff_coordinator2_photo')->store('staff_photos', 'public');
         }
 
         $club->save();
 
-        // (You already updated $clubAdmin above; the duplicate admin update block below can be removed.)
-
-        // Student coordinators update (unchanged)
+        // Student coordinators update
         $studentIds = $request->student_ids ?? [];
         $studentNames = $request->student_names ?? [];
         $studentPhotos = $request->file('student_photos') ?? [];
@@ -163,7 +166,9 @@ class SuperadminController extends Controller
                 if ($student) {
                     $student->name = $name;
                     if (isset($studentPhotos[$index])) {
-                        Storage::disk('public')->delete($student->photo);
+                        if (!empty($student->photo)) {
+                            Storage::disk('public')->delete($student->photo);
+                        }
                         $student->photo = $studentPhotos[$index]->store('student_photos', 'public');
                     }
                     $student->save();
@@ -183,6 +188,7 @@ class SuperadminController extends Controller
     }
 
     return view('clubs.edit', compact('club', 'clubAdmin'));
+
 
 
 case 'delete':
