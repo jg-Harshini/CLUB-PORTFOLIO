@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Mail;
-use App\Mail\RegistrationRejectedMail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;

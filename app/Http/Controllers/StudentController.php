@@ -43,7 +43,7 @@ class StudentController extends Controller
         }
 
         // Get first 9 clubs alphabetically
-        $clubs = Club::orderBy('club_name')->take(9)->get();
+        $clubs = Club::orderBy('club_name')->take(12)->get();
 
            // Dynamic counter values
     $clubsCount = Club::count();

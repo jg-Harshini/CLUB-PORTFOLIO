@@ -533,7 +533,7 @@
                 </p>
             </div>
                  <div class="club-grid">
-    @foreach($clubs->take(9) as $club)
+    @foreach($clubs->take(12) as $club)
       <div class="club-card" data-aos="fade-up">
         <img src="{{ asset('storage/' . $club->logo) }}" alt="{{ $club->club_name }}">
         <div class="club-name-overlay" style="text-align: center";>{{ $club->club_name }}</div>

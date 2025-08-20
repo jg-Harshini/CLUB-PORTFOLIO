@@ -84,14 +84,24 @@ class SuperadminController extends Controller
         ]);
 
         // Update Club
-        $club->club_name = $request->club_name;
-        $club->introduction = $request->introduction;
-        $club->mission = $request->mission;
-        $club->staff_coordinator_name = $request->staff_coordinator_name;
-        $club->staff_coordinator_email = $request->staff_coordinator_email;
-        $club->year_started = $request->year_started;
-        $club->department_id = $request->department_id;
-        $club->category = $request->category;
+if ($clubAdmin) {
+    // Update existing
+    $clubAdmin->name = $request->admin_name;
+    $clubAdmin->email = $request->admin_email;
+    if ($request->admin_password) {
+        $clubAdmin->password = Hash::make($request->admin_password);
+    }
+    $clubAdmin->save();
+} else {
+    // Create new admin if not exists
+    User::create([
+        'name' => $request->admin_name,
+        'email' => $request->admin_email,
+        'password' => $request->admin_password ? Hash::make($request->admin_password) : Hash::make('defaultPass123'),
+        'role' => 'club_admin',
+        'club_id' => $club->id,
+    ]);
+}
 
         if ($request->hasFile('logo')) {
             Storage::disk('public')->delete($club->logo);
