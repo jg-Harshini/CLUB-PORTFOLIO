@@ -15,6 +15,9 @@ class Club extends Model
     'staff_coordinator_name',
     'staff_coordinator_email',
     'staff_coordinator_photo',
+    'staff_coordinator2_name',
+    'staff_coordinator2_email',
+    'staff_coordinator2_photo',
     'year_started',
     'department_id',
     'category'

@@ -7,8 +7,6 @@
    <form action="{{ route('superadmin.clubs', ['action' => 'edit', 'id' => $club->id]) }}" method="POST" enctype="multipart/form-data">
     @csrf
 
-        @csrf
-
         {{-- Club Name --}}
         <div class="mb-3 row">
             <label class="col-sm-3 col-form-label">Club Name</label>
@@ -74,6 +72,34 @@
                 @endif
             </div>
         </div>
+{{-- Staff Coordinator 2 Name --}}
+<div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Staff Coordinator 2 Name</label>
+    <div class="col-sm-9">
+        <input type="text" name="staff_coordinator2_name" value="{{ $club->staff_coordinator2_name }}" class="form-control">
+    </div>
+</div>
+
+{{-- Staff Coordinator 2 Email --}}
+<div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Staff Coordinator 2 Email</label>
+    <div class="col-sm-9">
+        <input type="email" name="staff_coordinator2_email" value="{{ $club->staff_coordinator2_email }}" class="form-control">
+    </div>
+</div>
+
+{{-- Staff Coordinator 2 Photo --}}
+<div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Staff Coordinator 2 Photo</label>
+    <div class="col-sm-9">
+        <input type="file" name="staff_coordinator2_photo" class="form-control">
+        @if ($club->staff_coordinator2_photo)
+            <div class="mt-2">
+                <img src="{{ asset('storage/' . $club->staff_coordinator2_photo) }}" width="60" height="60" style="object-fit: cover;" class="rounded-circle shadow">
+            </div>
+        @endif
+    </div>
+</div>
 
         {{-- Year of Start --}}
         <div class="mb-3 row">

@@ -27,26 +27,44 @@
 
             <hr class="my-4">
 
-            {{-- Staff Coordinator --}}
-            <div class="row align-items-center mb-5">
-                <!--div class="col-md-3 text-center mb-3 mb-md-0">
-                    @if ($club->staff_coordinator_photo)
-                        <img src="{{ asset('storage/' . $club->staff_coordinator_photo) }}"
-                             class="rounded-circle shadow border"
-                             width="140" height="140" alt="Staff Photo" style="object-fit: cover;">
-                    @else
-                        <div class="rounded-circle bg-light d-flex justify-content-center align-items-center shadow border"
-                             style="width: 140px; height: 140px;">
-                            <i class="bi bi-person fs-1 text-muted"></i>
-                        </div>
-                    @endif
-                </div-->
-                <div class="col-md-9">
-                    <h4 class="fw-semibold" style="color: #003366;">Staff Coordinator</h4>
-                    <h6 class="mb-1 mt-3">{{ $club->staff_coordinator_name }}</h6>
-                    <p class="mb-0 text-muted"><i class="bi bi-envelope"></i> {{ $club->staff_coordinator_email }}</p>
-                </div>
-            </div>
+{{-- Staff Coordinators --}}
+<div class="row mb-5">
+    <h4 class="fw-semibold mb-4" style="color: #003366;">Staff Coordinators</h4>
+
+    {{-- Staff Coordinator 1 --}}
+    <div class="col-auto me-4 mb-3">
+        @if($club->staff_coordinator_photo)
+            <img src="{{ asset('storage/' . $club->staff_coordinator_photo) }}"
+                 alt="Staff Coordinator 1"
+                 class="rounded-circle mb-2"
+                 width="100" height="100"
+                 style="object-fit: cover;">
+        @endif
+        <h6 class="mb-1">{{ $club->staff_coordinator_name ?? '—' }}</h6>
+        <p class="mb-0 text-muted">
+            <i class="bi bi-envelope"></i> {{ $club->staff_coordinator_email ?? '—' }}
+        </p>
+    </div>
+
+    {{-- Staff Coordinator 2 --}}
+    @if($club->staff_coordinator2_name || $club->staff_coordinator2_email || $club->staff_coordinator2_photo)
+        <div class="col-auto mb-3">
+            @if($club->staff_coordinator2_photo)
+                <img src="{{ asset('storage/' . $club->staff_coordinator2_photo) }}"
+                     alt="Staff Coordinator 2"
+                     class="rounded-circle mb-2"
+                     width="100" height="100"
+                     style="object-fit: cover;">
+            @endif
+            <h6 class="mb-1">{{ $club->staff_coordinator2_name ?? '—' }}</h6>
+            <p class="mb-0 text-muted">
+                <i class="bi bi-envelope"></i> {{ $club->staff_coordinator2_email ?? '—' }}
+            </p>
+        </div>
+    @endif
+</div>
+
+
 
             <hr class="my-4">
 
