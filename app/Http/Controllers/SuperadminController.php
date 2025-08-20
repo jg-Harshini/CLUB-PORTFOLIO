@@ -185,11 +185,21 @@ class SuperadminController extends Controller
     return view('clubs.edit', compact('club', 'clubAdmin'));
 
 
-            case 'delete':
-                $club = Club::findOrFail($id);
-                Storage::disk('public')->delete([$club->logo, $club->staff_coordinator_photo]);
-                $club->delete();
-                return redirect()->back()->with('success', 'Club deleted successfully!');
+case 'delete':
+    $club = Club::findOrFail($id);
+
+    // Delete logo if exists
+    if ($club->logo) {
+        Storage::disk('public')->delete($club->logo);
+    }
+
+    // Delete staff coordinator photo if exists
+    if ($club->staff_coordinator_photo) {
+        Storage::disk('public')->delete($club->staff_coordinator_photo);
+    }
+
+    $club->delete();
+    return redirect()->back()->with('success', 'Club deleted successfully!');
 
             case 'profile':
                 $club = Club::with('events')->findOrFail($id);
