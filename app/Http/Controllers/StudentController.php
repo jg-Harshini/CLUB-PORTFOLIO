@@ -20,8 +20,8 @@ class StudentController extends Controller
 
         // Get up to 6 upcoming events
         $upcoming = Event::with('club')
-            ->where('date', '>=', $today)
-            ->orderBy('date')
+            ->where('start_date', '>=', $today)
+            ->orderBy('start_date')
             ->take(6)
             ->get();
 
@@ -32,8 +32,8 @@ class StudentController extends Controller
 
             // Get recently completed events to fill the rest
             $recent = Event::with('club')
-                ->where('date', '<', $today)
-                ->orderByDesc('date')
+                ->where('start_date', '<', $today)
+                ->orderByDesc('start_date')
                 ->take($fillCount)
                 ->get();
 
@@ -87,11 +87,11 @@ class StudentController extends Controller
             $query->where('club_id', $clubId);
         }
 
-        $events = $query->orderBy('date')->get();
+        $events = $query->orderBy('start_date')->get();
         $today = now()->toDateString();
 
-        $upcoming = $events->where('date', '>=', $today);
-        $completed = $events->where('date', '<', $today);
+        $upcoming = $events->where('start_date', '>=', $today);
+        $completed = $events->where('start_date', '<', $today);
         $clubs = Club::all();
 
         return view('student.events', compact('upcoming', 'completed', 'clubs', 'clubId'));
