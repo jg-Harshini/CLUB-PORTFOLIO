@@ -25,7 +25,7 @@ class ClubAdminController extends Controller
 public function dashboard()
 {
     $clubId = Auth::user()->club_id;
-$clubName = \App\Models\Club::where('id', $clubId)->value('club_name');
+$clubName = Club::where('id', $clubId)->value('club_name');
 
     // Total students registered to this club
 $totalStudents = DB::table('club_registration')->where('club_id', $clubId)->count();
@@ -113,8 +113,8 @@ public function approveOrRejectEnrollments(Request $request)
             $clubReg = DB::table('club_registration')->where('id', $id)->first();
             
             if ($clubReg) {
-                $registration = \App\Models\Registration::find($clubReg->registration_id);
-                $club = \App\Models\Club::find($clubReg->club_id);
+                $registration = Registration::find($clubReg->registration_id);
+                $club = Club::find($clubReg->club_id);
 
                 if ($registration && $club) {
                     $data = [
@@ -122,7 +122,7 @@ public function approveOrRejectEnrollments(Request $request)
                         'club' => $club->club_name,
                     ];
 
-Mail::to($registration->email)->queue(new RegistrationRejectedMail($data));
+Mail::to($registration->email)->send(new RegistrationRejectedMail($data));
                 }
 
                 // Delete the record after email
@@ -145,8 +145,6 @@ Mail::to($registration->email)->queue(new RegistrationRejectedMail($data));
 
     return back()->with('success', $message);
 }
-
-
 
 
 

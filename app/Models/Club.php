@@ -32,6 +32,10 @@ class Club extends Model
 {
     return $this->hasMany(\App\Models\Event::class);
 }
+public function setCategoryAttribute($value)
+{
+    $this->attributes['category'] = strtolower(trim($value));
+}
 public function user() {
     return $this->hasOne(User::class, 'club_id')->where('role', 'club_admin');
 }

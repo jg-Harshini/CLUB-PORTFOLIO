@@ -47,11 +47,14 @@ public function redirectTo()
     return back()->withErrors(['email' => 'Invalid credentials.']);
 }
 
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('login');
-    }
+public function logout(Request $request)
+{
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    // Redirect to login page correctly
+    return redirect()->route('login.form');
+}
+
 }
