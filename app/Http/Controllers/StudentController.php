@@ -102,7 +102,8 @@ class StudentController extends Controller
 public function showEnrollForm()
 {
     $clubs = Club::orderBy('club_name')->get();
-
+    print_r(count($clubs));exit;
+    
     // Fetch departments from DB and sort alphabetically
     $departments = DB::table('departments')
         ->orderBy('name')
