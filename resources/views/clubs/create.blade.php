@@ -120,8 +120,8 @@
        <div class="col-sm-9">
            <select name="category" class="form-select" required>
                <option value="">Select Category</option>
-               <option value="Technical">Technical</option>
-               <option value="Non-Technical">Non-Technical</option>
+               <option value="technical">Technical</option>
+               <option value="non-technical">Non-Technical</option>
            </select>
        </div>
    </div>
