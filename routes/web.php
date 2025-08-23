@@ -54,7 +54,7 @@ Route::prefix('tce/student')->group(function () {
 | SUPERADMIN ROUTES (auth + role check)
 |--------------------------------------------------------------------------
 */
-Route::prefix('tce/superadmin')->middleware(['auth'])->group(function () {
+Route::prefix('tce/superadmin')->middleware(['auth', 'role:super_admin'])->group(function () {
     Route::get('/dashboard', [SuperadminController::class, 'dashboard'])->name('superadmin.dashboard');
     Route::match(['get', 'post'], '/clubs/{action?}/{id?}', [SuperadminController::class, 'clubs'])->name('superadmin.clubs');
     Route::match(['get', 'post'], '/events/{action?}/{id?}', [SuperadminController::class, 'events'])->name('superadmin.events');
@@ -70,7 +70,7 @@ Route::prefix('tce/superadmin')->middleware(['auth'])->group(function () {
 | CLUB ADMIN ROUTES (auth + role check)
 |--------------------------------------------------------------------------
 */
-Route::prefix('clubadmin')->middleware(['auth'])->group(function () {
+Route::prefix('clubadmin')->middleware(['auth', 'role:club_admin'])->group(function () {
     Route::get('/dashboard', [ClubAdminController::class, 'dashboard'])->name('clubadmin.dashboard');
     Route::get('/profile', [ClubAdminController::class, 'profile'])->name('clubadmin.profile');
     Route::match(['get', 'post'], '/events/{action?}/{id?}', [ClubAdminController::class, 'events'])->name('clubadmin.events');
@@ -87,7 +87,7 @@ Route::prefix('clubadmin')->middleware(['auth'])->group(function () {
 | HOD ROUTES (auth + role check)
 |--------------------------------------------------------------------------
 */
-Route::prefix('hod')->middleware(['auth'])->group(function () {
+Route::prefix('hod')->middleware(['auth', 'role:hod'])->group(function () {
     Route::get('/dashboard', [HodController::class, 'index'])->name('hod.dashboard');
     Route::get('/clubs', [HodController::class, 'clubs'])->name('hod.clubs');
     Route::get('/clubs/view/{id}', [HodController::class, 'clubs'])->name('hod.clubs.show')->defaults('action', 'view');
