@@ -57,14 +57,15 @@ $totalStudents = DB::table('club_registration as cr')
     ->select('clubs.club_name', DB::raw('count(*) as total'))
     ->pluck('total', 'clubs.club_name');  // FIXED: use 'clubs.club_name'
 
+    $genderDistribution = DB::table('club_registration')
+    ->join('registrations', 'club_registration.registration_id', '=', 'registrations.id')
+    ->whereIn('club_registration.club_id', $clubIds)
+    ->where('registrations.department', $departmentName) // 👈 department filter
+    ->select('registrations.gender', DB::raw('count(*) as total'))
+    ->groupBy('registrations.gender')
+    ->pluck('total', 'gender');
 
-        // Gender distribution in these clubs
-        $genderDistribution = DB::table('club_registration')
-            ->join('registrations', 'club_registration.registration_id', '=', 'registrations.id')
-            ->whereIn('club_registration.club_id', $clubIds)
-            ->select('registrations.gender', DB::raw('count(*) as total'))
-            ->groupBy('registrations.gender')
-            ->pluck('total', 'gender');
+
 
 
 

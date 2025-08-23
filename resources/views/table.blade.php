@@ -87,20 +87,26 @@
       $('#excelExport').attr('href', excelUrl);
     }
 
-    $('#deptFilter, #clubFilter').on('change', function () {
-      const dept = $('#deptFilter').val().toLowerCase();
-      const club = $('#clubFilter').val().toLowerCase();
+   $('#deptFilter, #clubFilter').on('change', function () {
+  const dept = $('#deptFilter').val();
+  const club = $('#clubFilter').val();
 
-      table.rows().every(function () {
-        const data = this.data();
-        const deptMatch = !dept || data[1].toLowerCase() === dept;
-        const clubMatch = !club || data[2].toLowerCase() === club;
+  console.log("🔎 Dept filter:", dept, " | Club filter:", club);
 
-        $(this.node()).toggle(deptMatch && clubMatch);
-      });
+  // Apply department filter (column index 1)
+  table.column(1).search(dept ? '^' + dept + '$' : '', true, false);
 
-      updateExportLinks();
-    });
+  // Apply club filter (column index 2)
+  table.column(2).search(club ? '^' + club + '$' : '', true, false);
+
+  // Redraw with both filters applied
+  table.page(0).draw('page');
+
+  console.log("📊 Rows after filter:", table.rows({ filter: 'applied' }).count());
+
+  updateExportLinks();
+});
+
 
     updateExportLinks(); // Initial run
   });

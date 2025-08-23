@@ -473,12 +473,13 @@ foreach ($rawData as $key => $value) {
             )
             ->get();
 
-        $departments = [
-            'CSE', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL', 'DS', 'AI-ML',
-            'MECT', 'CSBS', 'ARCH'
-        ];
+       $departments = \App\Models\Registration::select('department')
+        ->distinct()
+        ->orderBy('department', 'asc')
+        ->pluck('department');
 
-        $clubs = Club::select('club_name')->get();
+
+        $clubs = Club::select('club_name')->orderBy('club_name','asc')->get();
 
         return view('table', [
             'students' => $students,

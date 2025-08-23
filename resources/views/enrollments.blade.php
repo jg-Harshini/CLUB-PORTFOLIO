@@ -71,7 +71,15 @@
 
 <script>
 $(document).ready(function () {
-    const table = $('#clubTable').DataTable();
+    console.log("✅ Document Ready");
+
+    const table = $('#clubTable').DataTable({
+        pageLength: 10,
+        lengthChange: true,
+        ordering: true,
+        searching: true
+    });
+    console.log("✅ DataTable initialized");
 
     function updateExportLinks() {
         const dept = $('#deptFilter').val();
@@ -88,23 +96,34 @@ $(document).ready(function () {
 
         $('#pdfExport').attr('href', pdfUrl);
         $('#excelExport').attr('href', excelUrl);
+
+        console.log("🔗 Export links updated:", { pdfUrl, excelUrl });
     }
 
-    $('#deptFilter').on('change', function () {
-        const dept = $(this).val().toLowerCase();
-        table.rows().every(function () {
-            const data = this.data();
-            const match = !dept || data[2].toLowerCase() === dept;
-            $(this.node()).toggle(match);
-        });
-        updateExportLinks();
-    });
+   $('#deptFilter').on('change', function () {
+    const dept = $(this).val();
+    console.log("🔎 Dept filter changed:", dept);
+
+    // Apply filter + draw immediately
+    table.column(3)
+         .search(dept ? '^' + dept + '$' : '', true, false)
+         .draw();
+
+    // ✅ Always reset to first page after filter
+    table.page(0).draw('page');
+
+    // Debug rows count
+    console.log("📊 Filtered rows count:", table.rows({ filter: 'applied' }).count());
 
     updateExportLinks();
+});
 
-    // Select/Deselect all checkboxes
+
+    // ✅ Select/Deselect all
     $('#selectAll').on('change', function() {
-        $('input[name="selected_ids[]"]').prop('checked', this.checked);
+        const checked = this.checked;
+        $('input[name="selected_ids[]"]').prop('checked', checked);
+        console.log("☑️ Select All toggled:", checked);
     });
 });
 

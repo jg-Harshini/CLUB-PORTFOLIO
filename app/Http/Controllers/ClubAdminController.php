@@ -91,7 +91,10 @@ $query = Registration::select(
     }
 
     $students = $query->get();
-    $departments = Registration::distinct()->pluck('department');
+$departments = Registration::select('department')
+    ->distinct()
+    ->orderBy('department', 'asc') // or 'desc'
+    ->pluck('department');
 
     return view('enrollments', compact('students', 'departments'));
 }
