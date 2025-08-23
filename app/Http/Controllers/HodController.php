@@ -57,27 +57,30 @@ $totalStudents = DB::table('club_registration as cr')
     ->select('clubs.club_name', DB::raw('count(*) as total'))
     ->pluck('total', 'clubs.club_name');  // FIXED: use 'clubs.club_name'
 
-    $genderDistribution = DB::table('club_registration')
-    ->join('registrations', 'club_registration.registration_id', '=', 'registrations.id')
-    ->whereIn('club_registration.club_id', $clubIds)
-    ->where('registrations.department', $departmentName) // 👈 department filter
-    ->select('registrations.gender', DB::raw('count(*) as total'))
-    ->groupBy('registrations.gender')
+// ✅ Gender Distribution of students
+$genderDistribution = DB::table('registrations')
+    ->where('department', $departmentName)
+    ->select('gender', DB::raw('COUNT(*) as total'))
+    ->groupBy('gender')
     ->pluck('total', 'gender');
 
+// ✅ Normalize to include both genders even if 0
+$genderDistribution = [
+    'Male' => $genderDistribution['Male'] ?? 0,
+    'Female' => $genderDistribution['Female'] ?? 0,
+];
 
-
-
-
+// ✅ Pass normalized to view
 return view('hod.dash', compact(
     'totalClubs',
     'totalApplications',
     'totalStudents',
     'popularClubs',
     'activeClubsByEvents',
-    'genderDistribution',
+    'genderDistribution', // 👈 not genderDistribution
     'departmentName'
 ));
+
 
     }
 
