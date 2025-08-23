@@ -128,13 +128,14 @@
 <div class="mb-3 row">
     <label class="col-sm-3 col-form-label">Category</label>
     <div class="col-sm-9">
-        <select name="category" class="form-select" required>
+        <select name="category" class="form-select" required>ss
             <option value="">Select Category</option>
-            <option value="Technical" {{ $club->category == 'Technical' ? 'selected' : '' }}>Technical</option>
-            <option value="Non-Technical" {{ $club->category == 'Non-Technical' ? 'selected' : '' }}>Non-Technical</option>
+            <option value="technical" {{ $club->category == 'technical' ? 'selected' : '' }}>Technical</option>
+            <option value="non-technical" {{ $club->category == 'non-technical' ? 'selected' : '' }}>Non-Technical</option>
         </select>
     </div>
 </div>
+
 
         {{-- Student Coordinators --}}
         <div class="mb-3 row">
@@ -172,18 +173,19 @@
 <h4>Club Admin Details</h4>
 <div class="form-group mb-3">
     <label for="admin_name">Admin Name</label>
-    <input type="text" name="admin_name" class="form-control" value="{{ $clubAdmin->name ?? '' }}" required>
+    <input type="text" name="admin_name" class="form-control" value="{{ $clubAdmin->name ?? '' }}">
 </div>
 
 <div class="form-group mb-3">
     <label for="admin_email">Admin Email</label>
-    <input type="email" name="admin_email" class="form-control" value="{{ $clubAdmin->email ?? '' }}" required>
+    <input type="email" name="admin_email" class="form-control" value="{{ $clubAdmin->email ?? '' }}">
 </div>
 
 <div class="form-group mb-3">
     <label for="admin_password">Admin Password (leave blank if unchanged)</label>
     <input type="password" name="admin_password" class="form-control" autocomplete="new-password">
 </div>
+
 
         {{-- Submit --}}
         <div class="text-end">
