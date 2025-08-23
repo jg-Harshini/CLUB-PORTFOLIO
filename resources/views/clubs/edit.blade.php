@@ -130,8 +130,8 @@
     <div class="col-sm-9">
         <select name="category" class="form-select" required>
             <option value="">Select Category</option>
-            <option value="Technical" {{ $club->category == 'Technical' ? 'selected' : '' }}>Technical</option>
-            <option value="Non-Technical" {{ $club->category == 'Non-Technical' ? 'selected' : '' }}>Non-Technical</option>
+            <option value="technical" {{ $club->category == 'technical' ? 'selected' : '' }}>Technical</option>
+            <option value="non-technical" {{ $club->category == 'non-technical' ? 'selected' : '' }}>Non-Technical</option>
         </select>
     </div>
 </div>
