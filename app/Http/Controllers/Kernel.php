@@ -82,7 +82,7 @@ class Kernel extends HttpKernel
 
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'club_admin' => \App\Http\Middleware\ClubAdminMiddleware::class,
 
     ];
 }

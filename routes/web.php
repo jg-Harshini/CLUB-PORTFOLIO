@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
+use Illuminate\Http\Request;
+use App\Models\User;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Auth\LoginController;
@@ -8,29 +13,49 @@ use App\Http\Controllers\ClubAdminController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\HodController;
 
+
+
+Route::get('/export/excel', [EnrollmentController::class, 'exportExcel'])->name('export.excel');
+Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('export.pdf');
+
 /*
 |--------------------------------------------------------------------------
-| ROOT REDIRECT
+| ROOT REDIRECT OR HOME PAGE
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
     return redirect('/tce/login');
 });
-
-Route::get('/login', function () {
-    return redirect()->route('login.form');
-})->name('login');
-
-
 /*
 |--------------------------------------------------------------------------
-| AUTH ROUTES
+| AUTHENTICATION ROUTES
 |--------------------------------------------------------------------------
 */
+Route::post('/user-clubs', [StudentController::class, 'getUserClubs'])->name('student.user.clubs');
+
+
 Route::prefix('tce')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| SUPERADMIN ROUTES (Protected by auth)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('tce/superadmin')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [SuperadminController::class, 'dashboard'])->name('superadmin.dashboard');
+
+    Route::match(['get', 'post'], '/clubs/{action?}/{id?}', [SuperadminController::class, 'clubs'])->name('superadmin.clubs');
+    Route::match(['get', 'post'], '/events/{action?}/{id?}', [SuperadminController::class, 'events'])->name('superadmin.events');
+    Route::match(['get', 'post'], '/faculties/{action?}/{id?}', [SuperadminController::class, 'faculties'])->name('superadmin.faculties');
+    Route::match(['get', 'post'], '/students/{action?}/{id?}', [SuperadminController::class, 'students'])->name('superadmin.students');
+Route::get('/events/view/{id}', [SuperadminController::class, 'viewEvent'])->name('superadmin.events.view');
+
+    Route::get('/enrollments', [SuperadminController::class, 'enrollments'])->name('superadmin.enrollments');
 });
 
 /*
@@ -51,52 +76,35 @@ Route::prefix('tce/student')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| SUPERADMIN ROUTES (auth + role check)
+| CLUB ADMIN ROUTES (OPTIONAL)
 |--------------------------------------------------------------------------
 */
-Route::prefix('tce/superadmin')->middleware(['auth', 'role:super_admin'])->group(function () {
-    Route::get('/dashboard', [SuperadminController::class, 'dashboard'])->name('superadmin.dashboard');
-    Route::match(['get', 'post'], '/clubs/{action?}/{id?}', [SuperadminController::class, 'clubs'])->name('superadmin.clubs');
-    Route::match(['get', 'post'], '/events/{action?}/{id?}', [SuperadminController::class, 'events'])->name('superadmin.events');
-    Route::match(['get', 'post'], '/faculties/{action?}/{id?}', [SuperadminController::class, 'faculties'])->name('superadmin.faculties');
-    Route::match(['get', 'post'], '/students/{action?}/{id?}', [SuperadminController::class, 'students'])->name('superadmin.students');
-    Route::get('/events/view/{id}', [SuperadminController::class, 'viewEvent'])->name('superadmin.events.view');
-    Route::get('/events/print/{id}', [SuperadminController::class, 'printReport'])->name('superadmin.events.print');
-    Route::get('/enrollments', [SuperadminController::class, 'enrollments'])->name('superadmin.enrollments');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/clubadmin/dashboard', [ClubAdminController::class, 'dashboard'])->name('clubadmin.dashboard');
+    Route::get('/clubadmin/profile', [ClubAdminController::class, 'profile'])->name('clubadmin.profile');
+    Route::match(['get', 'post'], '/clubadmin/events/{action?}/{id?}', [ClubAdminController::class, 'events'])->name('clubadmin.events');
+    Route::get('/clubadmin/enrollments', [ClubAdminController::class, 'enrollments'])->name('clubadmin.enrollments');
+    Route::get('/clubadmin/export/excel', [EnrollmentController::class, 'exportExcel'])->name('clubadmin.export.excel');
+    Route::get('/clubadmin/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('clubadmin.export.pdf'); // ✅ now points to existing method
+    Route::post('/clubadmin/enrollments/action', [ClubAdminController::class, 'approveOrRejectEnrollments'])->name('clubadmin.enrollments.action');
 });
 
-/*
-|--------------------------------------------------------------------------
-| CLUB ADMIN ROUTES (auth + role check)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('clubadmin')->middleware(['auth', 'role:club_admin'])->group(function () {
-    Route::get('/dashboard', [ClubAdminController::class, 'dashboard'])->name('clubadmin.dashboard');
-    Route::get('/profile', [ClubAdminController::class, 'profile'])->name('clubadmin.profile');
-    Route::match(['get', 'post'], '/events/{action?}/{id?}', [ClubAdminController::class, 'events'])->name('clubadmin.events');
-    Route::get('/enrollments', [ClubAdminController::class, 'enrollments'])->name('clubadmin.enrollments');
-    Route::post('/enrollments/action', [ClubAdminController::class, 'approveOrRejectEnrollments'])->name('clubadmin.enrollments.action');
 
-    // exports
-    Route::get('/export/excel', [EnrollmentController::class, 'exportExcel'])->name('clubadmin.export.excel');
-    Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('clubadmin.export.pdf');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/hod/dashboard', [App\Http\Controllers\HodController::class, 'index'])->name('hod.dashboard');
+    Route::get('/hod/clubs', [App\Http\Controllers\HodController::class, 'clubs'])->name('hod.clubs');
+Route::get('/hod/clubs/view/{id}', [App\Http\Controllers\HodController::class, 'clubs'])->name('hod.clubs.show')->defaults('action', 'view');
+Route::get('/hod/clubs/{clubId}/events/view/{id}', [App\Http\Controllers\HodController::class, 'viewEvent'])->name('hod.clubs.events.view');
+Route::get('/hod/events/edit/{id}', [App\Http\Controllers\HodController::class, 'editEvent'])->name('hod.events.edit');
+Route::get('/hod/enrollments', [App\Http\Controllers\HodController::class, 'enrollments'])->name('hod.enrollments');
+Route::get('/hod/events/print/{id}', [HodController::class, 'print'])->name('hod.events.print');
+
+
+Route::get('/hod/export/excel', [EnrollmentController::class, 'exportExcel'])->name('hod.export.excel');
+Route::get('/hod/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('hod.export.pdf');
+
+
 });
 
-/*
-|--------------------------------------------------------------------------
-| HOD ROUTES (auth + role check)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('hod')->middleware(['auth', 'role:hod'])->group(function () {
-    Route::get('/dashboard', [HodController::class, 'index'])->name('hod.dashboard');
-    Route::get('/clubs', [HodController::class, 'clubs'])->name('hod.clubs');
-    Route::get('/clubs/view/{id}', [HodController::class, 'clubs'])->name('hod.clubs.show')->defaults('action', 'view');
-    Route::get('/clubs/{clubId}/events/view/{id}', [HodController::class, 'viewEvent'])->name('hod.clubs.events.view');
-    Route::get('/events/edit/{id}', [HodController::class, 'editEvent'])->name('hod.events.edit');
-    Route::get('/enrollments', [HodController::class, 'enrollments'])->name('hod.enrollments');
-    Route::get('/events/print/{id}', [HodController::class, 'print'])->name('hod.events.print');
-
-    // exports
-    Route::get('/export/excel', [EnrollmentController::class, 'exportExcel'])->name('hod.export.excel');
-    Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('hod.export.pdf');
-});
+Route::get('/superadmin/events/print/{id}', [SuperadminController::class, 'printReport'])->name('superadmin.events.print');
