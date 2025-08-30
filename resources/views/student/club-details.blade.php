@@ -14,81 +14,9 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f8f9fc;
             margin: 0;
             padding: 0;
-        }
-
-        .club-header {
-            background-color: #800000;
-            color: white;
-            padding: 70px 0 40px;
-            text-align: center;
-        }
-
-        .club-logo {
-            max-height: 220px;
-            border-radius: 18px;
-            background-color: white;
-            padding: 10px;
-            border: 4px solid #ffffff;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            margin-top: 20px;
-        }
-
-        .section {
-            background-color: white;
-            padding: 30px;
-            border-radius: 16px;
-            margin-bottom: 30px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
-            transition: transform 0.4s ease;
-        }
-
-        .section:hover {
-            transform: scale(1.01);
-        }
-
-        .divider {
-            height: 4px;
-            width: 80px;
-            background-color: #800000;
-            margin: 20px auto;
-            border-radius: 3px;
-        }
-
-        .staff-photo {
-            width: 180px;
-            border-radius: 15px;
-            box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .staff-photo:hover {
-            transform: scale(1.07) rotate(1.5deg);
-        }
-
-        .event-card {
-            background-color: #f8f9fa;
-            border-left: 6px solid #063c64;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            transition: all 0.4s ease;
-        }
-
-        .event-card:hover {
-            transform: scale(1.01);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .founded-badge {
-            background-color: #800000;
-            color: white;
-            padding: 10px 20px;
-            font-size: 1.1rem;
-            border-radius: 30px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
         }
 
         .back-btn {
@@ -108,6 +36,21 @@
             background-color: #600000;
             transform: scale(1.05);
             color: #fff !important;
+        }
+
+        .event-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            margin-bottom: 20px;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
         }
 
         footer {
@@ -161,103 +104,143 @@
 <script src="https://unpkg.com/feather-icons"></script>
 <script>feather.replace()</script>
 
-<!-- Club Header -->
-<div class="club-header" data-aos="fade-down">
-    <div class="container">
-        <h1 class="display-4">{{ $club->club_name }}</h1>
-        @if($club->logo)
-            <img src="{{ asset('storage/' . $club->logo) }}" alt="{{ $club->club_name }} Logo" class="club-logo" data-aos="zoom-in" data-aos-delay="200">
-        @endif
-    </div>
-</div>
-
 <!-- Main Content -->
-<div class="container my-5">
-    <!-- Introduction -->
-    <div class="section" data-aos="fade-up">
-        <h3 class="text-center"><i class="bi bi-info-circle-fill me-2"></i>Introduction</h3>
-        <div class="divider"></div>
-        <p class="text-center">{{ $club->introduction }}</p>
-    </div>
+<div class="p-4" style="max-height: 100vh; overflow-y: auto; background-color: #f8f9fc;">
+    <div class="container-fluid">
+        <div class="card shadow-lg rounded-4 p-5 border-0 bg-white">
 
-    <!-- Mission -->
-    <div class="section" data-aos="fade-up" data-aos-delay="100">
-        <h3 class="text-center"><i class="bi bi-lightbulb-fill me-2"></i>Our Mission</h3>
-        <div class="divider"></div>
-        <p class="text-center">{{ $club->mission ?? 'Mission not available.' }}</p>
-    </div>
-
-    <!-- Staff Coordinator -->
-    <div class="section row align-items-center" data-aos="fade-right" data-aos-delay="150">
-        <!--div class="col-md-4 text-center">
-            @if($club->staff_coordinator_photo)
-                <img src="{{ asset('storage/' . $club->staff_coordinator_photo) }}" alt="Coordinator Photo" class="staff-photo">
-            @endif
-        </div-->
-        <div class="col-md-8 mt-4 mt-md-0">
-            <h3><i class="bi bi-person-badge-fill me-2"></i>Staff Coordinator</h3>
-            <div class="divider ms-0 me-auto"></div>
-            <p><strong>Name:</strong> {{ $club->staff_coordinator_name }}</p>
-            <p><strong>Email:</strong> <a href="mailto:{{ $club->staff_coordinator_email }}">{{ $club->staff_coordinator_email }}</a></p>
-        </div>
-    </div>
-<!-- Student Coordinators -->
-<div class="section" data-aos="fade-left" data-aos-delay="200">
-    <h3><i class="bi bi-people-fill me-2"></i>Student Coordinators</h3>
-    <div class="divider ms-0 me-auto"></div>
-
-    <div class="row mt-3">
-        @forelse($club->studentCoordinators as $student)
-            <div class="col-md-3 col-sm-4 col-6 mb-4 text">
-                <!--@if($student->photo)
-                    <img src="{{ asset('storage/' . $student->photo) }}"
-                         class="rounded-circle shadow border mb-2" width="120" height="120" style="object-fit: cover;">
-                @else
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow border mb-2"
-                         style="width: 120px; height: 120px;">
-                        <i class="bi bi-person-circle fs-1 text-muted"></i>
+            {{-- Club Header --}}
+            <div class="row align-items-center mb-5">
+                @if ($club->logo)
+                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                        <img src="{{ asset('storage/' . $club->logo) }}" alt="Club Logo"
+                             class="img-fluid rounded shadow-sm border"
+                             style="max-height: 150px; object-fit: contain;">
                     </div>
-                @endif-->
-                <p class="fw-medium text-dark mb-0">{{ $student->name }}</p>
+                @endif
+                <div class="col-md-9">
+                    <h2 class="fw-bold" style="color: #003366;">{{ $club->club_name }}</h2>
+                    <p class="text-muted"><strong>Founded:</strong> {{ $club->year_started }}</p>
+                    <p class="mt-3">{{ $club->introduction ?? '—' }}</p>
+
+                    <h5 class="fw-semibold mt-4" style="color: #003366;">Mission</h5>
+                    <p>{{ $club->mission ?? '—' }}</p>
+                </div>
             </div>
-        @empty
-            <div class="col-12 text-muted">No student coordinators listed.</div>
-        @endforelse
-    </div>
-</div>
 
+            <hr class="my-4">
 
-    <!-- Founded Year -->
-    <div class="section d-flex justify-content-between align-items-center" data-aos="zoom-in" data-aos-delay="200">
-        <div class="d-flex align-items-center gap-3">
-            <i class="bi bi-calendar-event fs-3 text-danger"></i>
-            <h5 class="mb-0">Founded</h5>
+            {{-- Staff Coordinators --}}
+            <div class="row mb-5">
+                <h4 class="fw-semibold mb-4" style="color: #003366;">Staff Coordinators</h4>
+
+                {{-- Staff Coordinator 1 --}}
+                <div class="col-auto me-4 mb-3">
+                    @if($club->staff_coordinator_photo)
+                        <img src="{{ asset('storage/' . $club->staff_coordinator_photo) }}"
+                             alt="Staff Coordinator 1"
+                             class="rounded-circle mb-2"
+                             width="100" height="100"
+                             style="object-fit: cover;">
+                    @endif
+                    <h6 class="mb-1">{{ $club->staff_coordinator_name ?? '—' }}</h6>
+                    <p class="mb-0 text-muted">
+                        <i class="bi bi-envelope"></i> {{ $club->staff_coordinator_email ?? '—' }}
+                    </p>
+                </div>
+
+                {{-- Staff Coordinator 2 --}}
+                @if($club->staff_coordinator2_name || $club->staff_coordinator2_email || $club->staff_coordinator2_photo)
+                    <div class="col-auto mb-3">
+                        @if($club->staff_coordinator2_photo)
+                            <img src="{{ asset('storage/' . $club->staff_coordinator2_photo) }}"
+                                 alt="Staff Coordinator 2"
+                                 class="rounded-circle mb-2"
+                                 width="100" height="100"
+                                 style="object-fit: cover;">
+                        @endif
+                        <h6 class="mb-1">{{ $club->staff_coordinator2_name ?? '—' }}</h6>
+                        <p class="mb-0 text-muted">
+                            <i class="bi bi-envelope"></i> {{ $club->staff_coordinator2_email ?? '—' }}
+                        </p>
+                    </div>
+                @endif
+            </div>
+
+            <hr class="my-4">
+
+            {{-- Student Coordinators --}}
+            <div class="mb-5">
+                <h4 class="fw-semibold mb-4" style="color: #003366;">Student Coordinators</h4>
+                <div class="row">
+                    @forelse ($club->studentCoordinators as $student)
+                        <div class="col-md-6 col-12 mb-3">
+                            <p class="fw-medium text-dark mb-0">{{ $student->name }}</p>
+                        </div>
+                    @empty
+                        <div class="text-muted">No student coordinators listed.</div>
+                    @endforelse
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            {{-- Events Section --}}
+            <div class="mt-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-semibold mb-0" style="color: #003366;">Club Events</h4>
+                </div>
+
+                @if($club->events && $club->events->count())
+                    <div class="row">
+                        @foreach($club->events as $event)
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <a href="{{ route('student.event.details', $event->id) }}" style="text-decoration: none; color: inherit;">
+                                    <div class="event-card h-100">
+                                        @if($event->image_path)
+                                            <img src="{{ asset('storage/' . $event->image_path) }}"
+                                                 alt="Event Image"
+                                                 class="img-fluid rounded mb-3"
+                                                 style="width: 100%; height: 200px; object-fit: cover;">
+                                        @else
+                                            <div class="bg-light rounded mb-3 d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                            </div>
+                                        @endif
+                                        <h5 class="fw-bold mb-2" style="color: #003366;">{{ $event->event_name }}</h5>
+                                        <p class="text-muted mb-2">{{ $event->description }}</p>
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar me-1"></i>
+                                            {{ \Carbon\Carbon::parse($event->start_date)->format('F j') }} to {{ \Carbon\Carbon::parse($event->end_date)->format('F j, Y') }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>
+                                            {{ \Carbon\Carbon::parse($event->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('h:i A') }}
+                                        </small>
+                                        @if(!empty($event->chief_guest) && $event->chief_guest !== 'NA')
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    <strong>Chief Guest:</strong> {{ $event->chief_guest }}
+                                                </small>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-center text-muted">No events right now. Stay tuned!</p>
+                @endif
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mt-5 mb-4">
+                <a href="{{ route('student.clubs.all') }}" class="back-btn">← Back to All Clubs</a>
+            </div>
+
         </div>
-        <span class="founded-badge">{{ $club->year_started }}</span>
-    </div>
-
-    <!-- Events -->
-    <div class="section" data-aos="fade-up" data-aos-delay="300">
-        <h3 class="text-center"><i class="bi bi-megaphone-fill me-2"></i>Events</h3>
-        <div class="divider mx-auto"></div>
-        @if($club->events && $club->events->count())
-            @foreach($club->events as $event)
-    <a href="{{ route('student.event.details', $event->id) }}" style="text-decoration: none; color: inherit;">
-        <div class="event-card">
-            <h5 style="color:#800000;">{{ $event->title }}</h5>
-            <p>{{ $event->event_name }}</p>
-            <small class="text-muted">📅 {{ \Carbon\Carbon::parse($event->event_date)->format('F j, Y') }}</small>
-        </div>
-    </a>
-@endforeach
-        @else
-            <p class="text-center">No events right now. Stay tuned!</p>
-        @endif
-    </div>
-
-    <!-- Back Button -->
-    <div class="text-center mt-5 mb-4">
-        <a href="{{ route('student.clubs.all') }}" class="back-btn">← Back to All Clubs</a>
     </div>
 </div>
 
@@ -328,8 +311,6 @@
     </div>
   </div>
 </footer>
-
-
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
