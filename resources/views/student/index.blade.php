@@ -779,6 +779,17 @@
              gbarch@tce.edu
           </a>
         </p>
+        <p class="mb-0">
+          <span style="font-weight:700; color:white;">College level co-ordinator</span><br>
+          <span style="font-weight:600; color:white;">Dr. P. Ramkumar</span><br>
+          <i class="fas fa-envelope me-2" style="color: #ff9999;"></i>
+          <a href="mailto:prrchem@tce.edu" 
+             style="color: #ff9999; text-decoration:none;" 
+             onmouseover="this.style.textDecoration='underline'" 
+             onmouseout="this.style.textDecoration='none'">
+             prrchem@tce.edu
+          </a>
+        </p>
       </div>
 
       <!-- Developed By -->
