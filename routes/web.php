@@ -33,8 +33,7 @@ Route::get('/', function () {
 */
 Route::post('/user-clubs', [StudentController::class, 'getUserClubs'])->name('student.user.clubs');
 
-
-Route::prefix('tce')->group(function () {
+\Route::prefix('tce')->middleware('web')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
