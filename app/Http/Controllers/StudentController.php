@@ -113,164 +113,215 @@ public function showEnrollForm()
 }
 
 
-    public function getUserClubs(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+   public function getUserClubs(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+    ]);
 
-        $email = $request->input('email');
-        $registration = Registration::where('email', $email)->first();
+    $email = $request->input('email');
+    $registration = Registration::where('email', $email)->first();
 
-        if (!$registration) {
-            return response()->json([
-                'status' => 'no_registration',
-                'tech_count' => 0,
-                'non_tech_count' => 0,
-                'registered_club_ids' => [],
-            ]);
-        }
-
-        $clubs = $registration->clubs()->get(['clubs.id', 'club_name', 'category']);
-
-        $techCount = $clubs->where('category', 'technical')->count();
-        $nonTechCount = $clubs->where('category', 'non-technical')->count();
-        $registeredClubIds = $clubs->pluck('id')->toArray();
-
+    if (!$registration) {
         return response()->json([
-            'status' => 'found',
-            'tech_count' => $techCount,
-            'non_tech_count' => $nonTechCount,
-            'registered_club_ids' => $registeredClubIds,
+            'status' => 'no_registration',
+            'tech_count' => 0,
+            'non_tech_count' => 0,
+            'shristi_count' => 0,
+            'volunteer_count' => 0,
+            'registered_club_ids' => [],
         ]);
     }
+
+    $clubs = $registration->clubs()->get(['clubs.id', 'club_name', 'category']);
+
+    $techCount = $clubs->where('category', 'technical')->count();
+    $nonTechCount = $clubs->where('category', 'non-technical')->count();
+    $shristiCount = $clubs->where('category', 'shristi')->count();
+    $volunteerCount = $clubs->where('category', 'volunteering groups')->count();
+
+    $registeredClubIds = $clubs->pluck('id')->toArray();
+
+    return response()->json([
+        'status' => 'found',
+        'tech_count' => $techCount,
+        'non_tech_count' => $nonTechCount,
+        'shristi_count' => $shristiCount,
+        'volunteer_count' => $volunteerCount,
+        'registered_club_ids' => $registeredClubIds,
+    ]);
+}
 
     public function checkRegistrationLimits(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email',
+    ]);
 
-        $email = $request->input('email');
-        $registration = Registration::where('email', $email)->first();
+    $email = $request->input('email');
+    $registration = Registration::where('email', $email)->first();
 
-        if (!$registration) {
-            return response()->json([
-                'status' => 'new_user',
-                'max_tech' => 2,
-                'max_non_tech' => 1,
-                'current_tech_count' => 0,
-                'current_non_tech_count' => 0,
-            ]);
-        }
+    // Set the maximum limits
+    $maxTech = 2;
+    $maxNonTech = 1;
+    $maxShristi = 4;
+    $maxVolunteer = 1;
 
-        $currentTechCount = $registration->clubs()->where('category', 'technical')->count();
-        $currentNonTechCount = $registration->clubs()->where('category', 'non-technical')->count();
-
+    if (!$registration) {
         return response()->json([
-            'status' => 'existing_user',
-            'max_tech' => 2,
-            'max_non_tech' => 1,
-            'current_tech_count' => $currentTechCount,
-            'current_non_tech_count' => $currentNonTechCount,
+            'status' => 'new_user',
+            'max_tech' => $maxTech,
+            'max_non_tech' => $maxNonTech,
+            'max_shristi' => $maxShristi,
+            'max_volunteer' => $maxVolunteer,
+            'current_tech_count' => 0,
+            'current_non_tech_count' => 0,
+            'current_shristi_count' => 0,
+            'current_volunteer_count' => 0,
         ]);
     }
+
+    // Count current selections
+    $currentTechCount = $registration->clubs()->where('category', 'technical')->count();
+    $currentNonTechCount = $registration->clubs()->where('category', 'non-technical')->count();
+    $currentShristiCount = $registration->clubs()->where('category', 'shristi')->count();
+    $currentVolunteerCount = $registration->clubs()->where('category', 'volunteering groups')->count();
+
+    return response()->json([
+        'status' => 'existing_user',
+        'max_tech' => $maxTech,
+        'max_non_tech' => $maxNonTech,
+        'max_shristi' => $maxShristi,
+        'max_volunteer' => $maxVolunteer,
+        'current_tech_count' => $currentTechCount,
+        'current_non_tech_count' => $currentNonTechCount,
+        'current_shristi_count' => $currentShristiCount,
+        'current_volunteer_count' => $currentVolunteerCount,
+    ]);
+}
 
     public function enroll(Request $request)
-    {
-        try {
-            Log::info('Registration request received', ['request' => $request->all()]);
+{
+    try {
+        Log::info('Registration request received', ['request' => $request->all()]);
 
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-                'roll_no' => 'required|string|max:50',
-                'email' => 'required|email|max:255',
-                'gender' => 'required|in:Male,Female,other',
-                'department' => 'required|string|max:255',
-                'clubs' => 'required|array',
-                'clubs.*' => 'exists:clubs,id'
+        // Merge Shristi & Volunteering into clubs[]
+        $allClubs = array_merge(
+            $request->input('clubs', []),
+            $request->input('shristi_clubs', []),
+            $request->input('volunteering_club', [])
+        );
+        $request->merge(['clubs' => $allClubs]);
+
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'roll_no' => 'required|string|max:50',
+            'email' => 'required|email|max:255',
+            'gender' => 'required|in:Male,Female,other',
+            'department' => 'required|string|max:255',
+            'clubs' => 'required|array',
+            'clubs.*' => 'exists:clubs,id'
+        ]);
+
+        Log::info('Validation passed', ['validatedData' => $validatedData]);
+
+        $existingRegistration = Registration::where('email', $validatedData['email'])->first();
+        Log::info('Existing registration found?', ['exists' => $existingRegistration ? 'yes' : 'no']);
+
+        // ===== MAX LIMITS =====
+        $maxTech = 2;
+        $maxNonTech = 1;
+        $maxShristi = 4;
+        $maxVolunteer = 1;
+
+        if ($existingRegistration) {
+            $alreadyRegisteredClubIds = $existingRegistration->clubs()->pluck('clubs.id')->toArray();
+            $newClubs = array_diff($validatedData['clubs'], $alreadyRegisteredClubIds);
+
+            if (empty($newClubs)) {
+                return redirect()->back()->with('error', 'You are already registered for these clubs.');
+            }
+
+            // Current counts
+            $currentTechCount = $existingRegistration->clubs()->where('category', 'technical')->count();
+            $currentNonTechCount = $existingRegistration->clubs()->where('category', 'non-technical')->count();
+            $currentShristiCount = $existingRegistration->clubs()->where('category', 'shristi')->count();
+            $currentVolunteerCount = $existingRegistration->clubs()->where('category', 'volunteering groups')->count();
+
+            // New selections by category
+            $newTechCount = Club::whereIn('id', $newClubs)->where('category', 'technical')->count();
+            $newNonTechCount = Club::whereIn('id', $newClubs)->where('category', 'non-technical')->count();
+            $newShristiCount = Club::whereIn('id', $newClubs)->where('category', 'shristi')->count();
+            $newVolunteerCount = Club::whereIn('id', $newClubs)->where('category', 'volunteering groups')->count();
+
+            // Validate limits
+            if (($currentTechCount + $newTechCount) > $maxTech) {
+                return redirect()->back()->with('error', 'Tech club registration limit exceeded.');
+            }
+            if (($currentNonTechCount + $newNonTechCount) > $maxNonTech) {
+                return redirect()->back()->with('error', 'Non-Tech club registration limit exceeded.');
+            }
+            if (($currentShristiCount + $newShristiCount) > $maxShristi) {
+                return redirect()->back()->with('error', 'Shristi club registration limit exceeded (max 4).');
+            }
+            if (($currentVolunteerCount + $newVolunteerCount) > $maxVolunteer) {
+                return redirect()->back()->with('error', 'Volunteering group registration limit exceeded (max 1).');
+            }
+
+            // Attach new clubs
+            $existingRegistration->clubs()->attach($newClubs);
+
+            return redirect()->back()->with('popup_message', 'Successfully registered for additional clubs!');
+        } 
+        else {
+            $selectedClubs = Club::whereIn('id', $validatedData['clubs'])->get();
+
+            // Count by category
+            $technicalCount = $selectedClubs->where('category', 'technical')->count();
+            $nonTechnicalCount = $selectedClubs->where('category', 'non-technical')->count();
+            $shristiCount = $selectedClubs->where('category', 'shristi')->count();
+            $volunteerCount = $selectedClubs->where('category', 'volunteering groups')->count();
+
+            // Validate limits
+            if ($technicalCount > $maxTech || $nonTechnicalCount > $maxNonTech || $shristiCount > $maxShristi || $volunteerCount > $maxVolunteer) {
+                return redirect()->back()
+                    ->with('popup_message', 'You can select max 2 Technical, 1 Non-Technical, 4 Shristi, and 1 Volunteering group.')
+                    ->withInput();
+            }
+
+            $registration = Registration::create([
+                'name' => $validatedData['name'],
+                'roll_no' => $validatedData['roll_no'],
+                'email' => $validatedData['email'],
+                'gender' => $validatedData['gender'],
+                'department' => $validatedData['department'],
             ]);
 
-            Log::info('Validation passed', ['validatedData' => $validatedData]);
+            $registration->clubs()->attach($validatedData['clubs']);
 
-            $existingRegistration = Registration::where('email', $validatedData['email'])->first();
-            Log::info('Existing registration found?', ['exists' => $existingRegistration ? 'yes' : 'no']);
+            $clubNames = $selectedClubs->pluck('club_name')->toArray();
+            $emailData = [
+                'name' => $validatedData['name'],
+                'roll_no' => $validatedData['roll_no'],
+                'email' => $validatedData['email'],
+                'department' => $validatedData['department'],
+                'clubs' => $clubNames,
+            ];
 
-            if ($existingRegistration) {
-                $currentClubCount = $existingRegistration->clubs()->count();
-                if ($currentClubCount >= 3) {
-                    return redirect()->back()->with('error', 'You have already registered for the maximum number of clubs.');
-                }
-
-                $alreadyRegisteredClubIds = $existingRegistration->clubs()->pluck('clubs.id')->toArray();
-                $newClubs = array_diff($validatedData['clubs'], $alreadyRegisteredClubIds);
-
-                if (empty($newClubs)) {
-                    return redirect()->back()->with('error', 'You are already registered for these clubs.');
-                }
-
-                $maxTech = 2;
-                $maxNonTech = 1;
-                $currentTechCount = $existingRegistration->clubs()->where('category', 'technical')->count();
-                $currentNonTechCount = $existingRegistration->clubs()->where('category', 'non-technical')->count();
-
-                $newTechCount = Club::whereIn('id', $newClubs)->where('category', 'technical')->count();
-                $newNonTechCount = Club::whereIn('id', $newClubs)->where('category', 'non-technical')->count();
-
-                if (($currentTechCount + $newTechCount) > $maxTech) {
-                    return redirect()->back()->with('error', 'Tech club registration limit exceeded.');
-                }
-
-                if (($currentNonTechCount + $newNonTechCount) > $maxNonTech) {
-                    return redirect()->back()->with('error', 'Non-Tech club registration limit exceeded.');
-                }
-
-                $existingRegistration->clubs()->attach($newClubs);
-
-                return redirect()->back()->with('popup_message', 'Successfully registered for additional clubs!');
-            } 
-            else {
-                $selectedClubs = Club::whereIn('id', $validatedData['clubs'])->get();
-                $technicalCount = $selectedClubs->where('category', 'technical')->count();
-                $nonTechnicalCount = $selectedClubs->where('category', 'non-technical')->count();
-
-                if ($technicalCount > 2 || $nonTechnicalCount > 1) {
-                    return redirect()->back()
-                        ->with('popup_message', 'You can select a maximum of 2 Technical clubs and 1 Non-Technical club.')
-                        ->withInput();
-                }
-
-                $registration = Registration::create([
-                    'name' => $validatedData['name'],
-                    'roll_no' => $validatedData['roll_no'],
-                    'email' => $validatedData['email'],
-                    'gender' => $validatedData['gender'],
-                    'department' => $validatedData['department'],
-                ]);
-
-                $registration->clubs()->attach($validatedData['clubs']);
-
-                $clubNames = $selectedClubs->pluck('club_name')->toArray();
-                $emailData = [
-                    'name' => $validatedData['name'],
-                    'roll_no' => $validatedData['roll_no'],
-                    'email' => $validatedData['email'],
-                    'department' => $validatedData['department'],
-                    'clubs' => $clubNames,
-                ];
-
-                try {
-                    Mail::to($validatedData['email'])->send(new RegistrationSuccessMail($emailData));
-                } catch (\Exception $e) {
-                    Log::error("Error sending mail: " . $e->getMessage());
-                }
-
-                return redirect()->back()->with('popup_message', 'Registration successful!');
+            try {
+                Mail::to($validatedData['email'])->send(new RegistrationSuccessMail($emailData));
+            } catch (\Exception $e) {
+                Log::error("Error sending mail: " . $e->getMessage());
             }
-        } 
-        catch (\Exception $e) {
-            Log::error('Unexpected error in registration: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong. Please try again.');
+
+            return redirect()->back()->with('popup_message', 'Registration successful!');
         }
+    } 
+    catch (\Exception $e) {
+        Log::error('Unexpected error in registration: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Something went wrong. Please try again.');
     }
+}
+
 }

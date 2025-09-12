@@ -122,6 +122,8 @@
                <option value="">Select Category</option>
                <option value="technical">Technical</option>
                <option value="non-technical">Non-Technical</option>
+               <option value="shristi">Shristi Cultural Association></option>
+               <option value="volunteering groups">Volunteering Groups</option>
            </select>
        </div>
    </div>
