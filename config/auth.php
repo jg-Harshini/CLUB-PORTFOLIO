@@ -109,12 +109,7 @@ return [
     | confirmation screen. By default, the timeout lasts for three hours.
     |
     */
-'providers' => [
-    'users' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\User::class,
-    ],
-],
+// Removed duplicate providers section - already defined above
 'prefix' => 'tce',
 'login' => '/tce/login',
 

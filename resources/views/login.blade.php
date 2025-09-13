@@ -195,5 +195,7 @@
         </footer>
     </div>
 
+    <!-- 🔒 Admin Security JavaScript -->
+    <script src="{{ asset('js/admin-security.js') }}"></script>
 </body>
 </html>

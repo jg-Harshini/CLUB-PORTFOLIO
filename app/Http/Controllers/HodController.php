@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EnrollmentsExport;
+use Illuminate\Support\Facades\Storage;
 
 
 class HodController extends Controller

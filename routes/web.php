@@ -15,8 +15,7 @@ use App\Http\Controllers\HodController;
 
 
 
-Route::get('/export/excel', [EnrollmentController::class, 'exportExcel'])->name('export.excel');
-Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('export.pdf');
+// Moved export routes to protected admin sections - see individual admin route groups
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +36,9 @@ Route::prefix('tce')->middleware('web')->group(function () {
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
+
+// Add alias route for Laravel's default authentication system
+Route::redirect('/login', '/tce/login')->name('login');
 
 
 Route::post('/user-clubs', [StudentController::class, 'getUserClubs'])->name('student.user.clubs');
@@ -64,8 +66,6 @@ Route::prefix('tce/student')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-
-
 /*
 |--------------------------------------------------------------------------
 | SUPERADMIN ROUTES
@@ -84,6 +84,10 @@ Route::prefix('tce/superadmin')
         Route::get('/events/view/{id}', [SuperadminController::class, 'viewEvent'])->name('superadmin.events.view');
         Route::get('/enrollments', [SuperadminController::class, 'enrollments'])->name('superadmin.enrollments');
         Route::get('/events/print/{id}', [SuperadminController::class, 'printReport'])->name('superadmin.events.print');
+
+        // 🔒 Protected export routes for Superadmin
+        Route::get('/export/excel', [EnrollmentController::class, 'exportExcel'])->name('superadmin.export.excel');
+        Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('superadmin.export.pdf');
     });
 
 /*
@@ -98,9 +102,11 @@ Route::prefix('clubadmin')
         Route::get('/profile', [ClubAdminController::class, 'profile'])->name('clubadmin.profile');
         Route::match(['get', 'post'], '/events/{action?}/{id?}', [ClubAdminController::class, 'events'])->name('clubadmin.events');
         Route::get('/enrollments', [ClubAdminController::class, 'enrollments'])->name('clubadmin.enrollments');
+        Route::post('/enrollments/action', [ClubAdminController::class, 'approveOrRejectEnrollments'])->name('clubadmin.enrollments.action');
+
+        // 🔒 Protected export routes for Club Admin
         Route::get('/export/excel', [EnrollmentController::class, 'exportExcel'])->name('clubadmin.export.excel');
         Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('clubadmin.export.pdf');
-        Route::post('/enrollments/action', [ClubAdminController::class, 'approveOrRejectEnrollments'])->name('clubadmin.enrollments.action');
     });
 
 /*
@@ -118,8 +124,9 @@ Route::prefix('hod')
         Route::get('/events/edit/{id}', [HodController::class, 'editEvent'])->name('hod.events.edit');
         Route::get('/enrollments', [HodController::class, 'enrollments'])->name('hod.enrollments');
         Route::get('/events/print/{id}', [HodController::class, 'print'])->name('hod.events.print');
+
+        // 🔒 Protected export routes for HOD
         Route::get('/export/excel', [EnrollmentController::class, 'exportExcel'])->name('hod.export.excel');
         Route::get('/export/pdf', [EnrollmentController::class, 'exportPDF'])->name('hod.export.pdf');
     });
 
-Route::get('/superadmin/events/print/{id}', [SuperadminController::class, 'printReport'])->name('superadmin.events.print');

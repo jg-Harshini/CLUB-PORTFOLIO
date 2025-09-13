@@ -105,9 +105,8 @@
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+AMvyTG2PdtsYYqD1xqXbB+g1Q9ct"
         crossorigin="anonymous"></script>
         <!-- JS Scripts -->
-
-
-
+        <!-- 🔒 Admin Security JavaScript -->
+        <script src="{{ asset('js/admin-security.js') }}"></script>
 
 @yield('scripts')
 

@@ -31,8 +31,8 @@
 
   <!-- Export Buttons -->
   <div class="mb-3 d-flex gap-2">
-    <a id="excelExport" href="{{ route('export.excel') }}" class="btn btn-success">Download Excel</a>
-    <a id="pdfExport" href="{{ route('export.pdf') }}" class="btn btn-danger">Download PDF</a>
+    <a id="excelExport" href="{{ route('superadmin.export.excel') }}" class="btn btn-success">Download Excel</a>
+    <a id="pdfExport" href="{{ route('superadmin.export.pdf') }}" class="btn btn-danger">Download PDF</a>
   </div>
 
   <!-- TABLE -->
@@ -71,8 +71,8 @@
       const club = $('#clubFilter').val();
       const dept = $('#deptFilter').val();
 
-      let pdfUrl = '{{ route("export.pdf") }}';
-      let excelUrl = '{{ route("export.excel") }}';
+      let pdfUrl = '{{ route("superadmin.export.pdf") }}';
+      let excelUrl = '{{ route("superadmin.export.excel") }}';
 
       const params = new URLSearchParams();
       if (club) params.append('club', club);

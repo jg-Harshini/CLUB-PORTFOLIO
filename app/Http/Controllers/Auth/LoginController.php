@@ -55,10 +55,20 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
+        
+        // Completely clear session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        // ✅ Consistent redirect to login.form
-        return redirect()->route('login.form');
+        $request->session()->flush();
+        
+        // Create response with cache-busting headers
+        $response = redirect()->route('login.form')
+            ->with('message', 'You have been successfully logged out.');
+            
+        // Add headers to prevent caching of this response
+        return $response
+            ->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT');
     }
 }

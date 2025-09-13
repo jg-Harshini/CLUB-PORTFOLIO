@@ -128,9 +128,17 @@ public function exportExcel(Request $request)
         $writer = new Xlsx($spreadsheet);
         $fileName = "club_enrollments_{$clubName}.xlsx";
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
-        $writer->save($tempFile);
-
-        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+        
+        if (!$tempFile) {
+            return response()->json(['error' => 'Could not create temporary file'], 500);
+        }
+        
+        try {
+            $writer->save($tempFile);
+            return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Export failed: ' . $e->getMessage()], 500);
+        }
     }
 
     // ✅ Superadmin / HOD export (unchanged)
@@ -203,9 +211,17 @@ public function exportExcel(Request $request)
     $writer = new Xlsx($spreadsheet);
     $fileName = 'registrations.xlsx';
     $tempFile = tempnam(sys_get_temp_dir(), $fileName);
-    $writer->save($tempFile);
-
-    return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    
+    if (!$tempFile) {
+        return response()->json(['error' => 'Could not create temporary file'], 500);
+    }
+    
+    try {
+        $writer->save($tempFile);
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Export failed: ' . $e->getMessage()], 500);
+    }
 }
 
 }
