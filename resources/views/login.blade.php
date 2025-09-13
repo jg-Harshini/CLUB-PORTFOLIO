@@ -155,22 +155,38 @@
         <!-- Main Login Area -->
         <div class="main">
             <div class="login-card">
-                <h2>Admin Login</h2>
+    <h2>Admin Login</h2>
 
-                <!-- Login Form -->
-                 <form method="POST" action="{{ route('login.submit') }}">
-                    @csrf
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" placeholder="admin@example.com" required>
+    <!-- Flash Error Message -->
+    @if(session('error'))
+        <div style="color: red; margin-bottom: 15px; text-align:center; font-weight:600;">
+            {{ session('error') }}
+        </div>
+    @endif
+    <!-- Validation Errors (like invalid email/password) -->
+    @if ($errors->any())
+        <div style="color: red; margin-bottom: 15px; text-align:center;">
+            <ul style="list-style:none; padding:0; margin:0;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" placeholder="Enter your password" required>
+    <!-- Login Form -->
+    <form method="POST" action="{{ route('login.submit') }}">
+        @csrf
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" placeholder="admin@example.com" required>
 
-                    <button type="submit">Login</button>
-                </form>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="Enter your password" required>
 
-             
-            </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
+
         </div>
 
         <!-- Footer with Links -->
