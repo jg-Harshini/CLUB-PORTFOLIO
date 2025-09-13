@@ -47,21 +47,27 @@
 
 <div class="wrapper">
     <!-- Sidebar -->
-    <div class="sidebar p-3">
-        <h4 class="text-center">Club Admin</h4>
-        <hr>
+    <div class="sidebar p-3 text-center">
+    <!-- Logo -->
+  <img src="{{ asset('img/logo1.png') }}" alt="Logo"
+     class="img-fluid mb-2 d-block mx-auto"
+     style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
 
-        <a href="{{ route('clubadmin.dashboard') }}">Dashboard</a>
-        <a href="{{ route('clubadmin.profile') }}">View Club Portfolio</a>
-        <a href="{{ route('clubadmin.enrollments') }}">Enrollments</a>
+    <!-- Title -->
+    <h4 class="mt-2">Club Admin</h4>
+    <hr>
 
+    <a href="{{ route('clubadmin.dashboard') }}">Dashboard</a>
+    <a href="{{ route('clubadmin.profile') }}">View Club Portfolio</a>
+    <a href="{{ route('clubadmin.enrollments') }}">Enrollments</a>
 
-        <!-- Logout -->
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-danger w-100 mt-3">Logout</button>
-        </form>
-    </div>
+    <!-- Logout -->
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="btn btn-danger w-100 mt-3">Logout</button>
+    </form>
+</div>
+
 
     <!-- Content Area -->
     <div class="content">

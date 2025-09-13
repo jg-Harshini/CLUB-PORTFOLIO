@@ -62,31 +62,37 @@
     <!-- Sidebar -->
      
     <div class="sidebar p-3">
-        <h4 class="text-center">Super Admin Panel</h4>
-        <hr>
+    <!-- Logo -->
+<img src="{{ asset('img/logo1.png') }}" alt="Logo"
+     class="img-fluid mb-2 d-block mx-auto"
+     style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
 
-        <a href="{{ route('superadmin.dashboard') }}">🏠 Dashboard</a>
+    <!-- Title -->
+    <h4 class="mt-2 text-center">Super Admin Panel</h4>
+    <hr>
 
-       <div class="dropdown mb-3">
-    <a class="dropdown-toggle d-block text-white" href="#" role="button"
-       id="manageClubDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        🏫 Manage Club
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="manageClubDropdown">
-        <li><a class="dropdown-item" href="{{ route('superadmin.clubs') }}">View Clubs</a></li>
-        <li><a class="dropdown-item" href="{{ route('superadmin.clubs', ['action' => 'create']) }}">Add Club</a></li>
-    </ul>
-</div>
+    <a href="{{ route('superadmin.dashboard') }}"> Dashboard</a>
 
+    <div class="dropdown mb-3">
+        <a class="dropdown-toggle d-block text-white" href="#" role="button"
+           id="manageClubDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+             Manage Clubs
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="manageClubDropdown">
+            <li><a class="dropdown-item" href="{{ route('superadmin.clubs') }}">View Clubs</a></li>
+            <li><a class="dropdown-item" href="{{ route('superadmin.clubs', ['action' => 'create']) }}">Add Club</a></li>
+        </ul>
+    </div>
 
+    <a href="{{ route('superadmin.enrollments') }}"> Enrollments</a>
 
-        <a href="{{ route('superadmin.enrollments') }}">📋 Enrollments</a>
-        <!-- 🔒 Logout -->
+    <!-- Logout -->
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="btn btn-danger w-100 mt-3">Logout</button>
     </form>
-    </div>
+</div>
+
     
 
     <!-- Content -->

@@ -5,7 +5,7 @@
     <title>HOD Panel</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
         html, body {
@@ -23,6 +23,7 @@
             background-color: #00264d;
             color: white;
             flex-shrink: 0;
+            text-align: center; /* ✅ Center everything */
         }
 
         .sidebar a {
@@ -30,10 +31,19 @@
             padding: 10px;
             display: block;
             text-decoration: none;
+            text-align: left; /* ✅ Keep links aligned left */
         }
 
         .sidebar a:hover {
             background-color: #003366;
+        }
+
+        .sidebar img.logo {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
         }
 
         .content {
@@ -47,13 +57,19 @@
 
 <div class="wrapper">
     <!-- Sidebar -->
-    <div class="sidebar p-3">
-        <h4 class="text-center">HOD Panel</h4>
+    <div class="sidebar p-3 text-center">
+        <!-- ✅ Logo -->
+     <img src="{{ asset('img/logo1.png') }}" alt="Logo"
+     class="img-fluid mb-2 d-block mx-auto"
+     style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
+
+        <!-- ✅ Title -->
+        <h4 class="mt-2">HOD Panel</h4>
         <hr>
 
-        <a href="{{ route('hod.dashboard') }}">🏠 Dashboard</a>
-            <a href="{{ route('hod.clubs') }}">📚 View Clubs</a> 
-            <a href="{{ route('hod.enrollments') }}">📝 Enrollments</a>
+        <a href="{{ route('hod.dashboard') }}"> Dashboard</a>
+        <a href="{{ route('hod.clubs') }}"> View Clubs</a> 
+        <a href="{{ route('hod.enrollments') }}"> Enrollments</a>
 
         <!-- 🔒 Logout -->
         <form method="POST" action="{{ route('logout') }}">
@@ -69,8 +85,7 @@
 </div>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <!-- 🔒 Admin Security JavaScript -->
 <script src="{{ asset('js/admin-security.js') }}"></script>
 
