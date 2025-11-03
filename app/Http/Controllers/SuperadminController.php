@@ -30,7 +30,7 @@ class SuperadminController extends Controller
             'staff_coordinator2_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'year_started' => 'required|integer',
             'department_id' => 'required|exists:departments,id',
-            'category' => 'required|string|in:technical,non-technical',
+            'category' => 'required|string|in:technical,non-technical,shristi,volunteering groups,library',
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email',
             'admin_password' => 'required|string|min:6',
@@ -94,7 +94,7 @@ class SuperadminController extends Controller
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email,' . ($clubAdmin->id ?? 'NULL'),
             'department_id' => 'required|exists:departments,id',
-            'category' => 'required|in:technical,non-technical',
+            'category' => 'required|in:technical,non-technical,shristi,volunteering groups,library',
         ]);
 
         // Club admin update or create

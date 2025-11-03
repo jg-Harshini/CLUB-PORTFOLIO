@@ -370,6 +370,20 @@ label:not(.form-check-label) {
     @endforeach
 </div>
 
+<label>Library Clubs(Not compulsory, max 1)</label>
+<div class="checkbox-group library">
+    @foreach($clubs->where('category', 'library') as $club)
+        <label class="form-check-label">
+<input type="checkbox" name="library_club[]" value="{{ $club->id }}" 
+       class="form-check-input club-checkbox"
+       data-type="lib"
+       {{ is_array(old('library_club')) && in_array($club->id, old('library_club')) ? 'checked' : '' }}>
+            {{ $club->club_name }}
+        </label>
+    @endforeach
+</div>
+
+
 
 
     <button type="submit">Submit</button>
@@ -508,6 +522,7 @@ $(document).ready(function () {
     const maxNonTech = 1;
     const maxShristi = 4;
     const maxVolunteer = 1;
+    const maxlib=1;
 
     let isReRegistration = false; // track if user already registered
 
@@ -517,6 +532,7 @@ $(document).ready(function () {
         const nonTechChecked = $('input.club-checkbox[data-type="non-technical"]:checked').length;
         const shristiChecked = $('input.club-checkbox[data-type="shristi"]:checked').length;
         const volunteerChecked = $('input.club-checkbox[data-type="volunteering"]:checked').length;
+        const libChecked = $('input.club-checkbox[data-type="lib"]:checked').length;
 
         if (techChecked > maxTech && $(this).data('type') === 'technical') {
             alert(`You can select only ${maxTech} Technical clubs.`);
@@ -537,6 +553,10 @@ $(document).ready(function () {
             alert(`You can select only ${maxVolunteer} Volunteering club.`);
             $(this).prop('checked', false);
         }
+        if (libChecked > maxlib && $(this).data('type') === 'lib') {
+            alert(`You can select only ${maxlib} Library club.`);
+            $(this).prop('checked', false);
+        }
     });
 
     // Submit form validation
@@ -547,6 +567,7 @@ $(document).ready(function () {
         const nonTechChecked = $('input.club-checkbox[data-type="non-technical"]:checked').length;
         const shristiChecked = $('input.club-checkbox[data-type="shristi"]:checked').length;
         const volunteerChecked = $('input.club-checkbox[data-type="volunteering"]:checked').length;
+        const libChecked = $('input.club-checkbox[data-type="lib"]:checked').length;
 
         if (!isReRegistration) {
             let message = '';
@@ -555,12 +576,6 @@ $(document).ready(function () {
             }
             if (nonTechChecked < 1) {
                 message += `Please select 1 Non-Technical club.<br>`;
-            }
-            if (shristiChecked < 4) {
-                message += `Please select 4 Shristi clubs.<br>`;
-            }
-            if (volunteerChecked < 1) {
-                message += `Please select 1 Volunteering club.`;
             }
 
             if (message !== '') {
@@ -594,6 +609,8 @@ $(document).ready(function () {
                     const nonTechCount = response.non_tech_count;
                     const shristiCount = response.shristi_count;
                     const volunteerCount = response.volunteer_count;
+                    const libCount = response.lib_count;
+
 
                     $('#clubLimitInfo').text(
                         `You have already registered in ${techCount} Technical, ${nonTechCount} Non-Technical, ${shristiCount} Shristi, and ${volunteerCount} Volunteering clubs.`
@@ -610,6 +627,9 @@ $(document).ready(function () {
                     }
                     if (volunteerCount >= maxVolunteer) {
                         $('input.club-checkbox[data-type="volunteering"]').prop('disabled', true);
+                    }
+                    if (libCount >= maxlib) {
+                        $('input.club-checkbox[data-type="lib"]').prop('disabled', true);
                     }
                 } else {
                     isReRegistration = false;

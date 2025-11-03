@@ -134,6 +134,7 @@
             <option value="non-technical" {{ $club->category == 'non-technical' ? 'selected' : '' }}>Non-Technical</option>
             <option value="shristi" {{ $club->category == 'shristi' ? 'selected' : '' }}>Shristi Cultural Association</option>
             <option value="volunteering groups" {{ $club->category == 'volunteering groups' ? 'selected' : '' }}>Volunteering Groups</option>
+            <option value="library" {{ $club->category == 'library' ? 'selected' : '' }}>Library</option>
 
         </select>
     </div>

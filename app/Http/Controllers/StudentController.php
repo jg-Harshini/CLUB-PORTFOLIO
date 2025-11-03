@@ -129,6 +129,7 @@ public function showEnrollForm()
             'non_tech_count' => 0,
             'shristi_count' => 0,
             'volunteer_count' => 0,
+            'lib_count'=> 0,
             'registered_club_ids' => [],
         ]);
     }
@@ -139,6 +140,7 @@ public function showEnrollForm()
     $nonTechCount = $clubs->where('category', 'non-technical')->count();
     $shristiCount = $clubs->where('category', 'shristi')->count();
     $volunteerCount = $clubs->where('category', 'volunteering groups')->count();
+    $libCount = $clubs->where('category', 'library')->count();
 
     $registeredClubIds = $clubs->pluck('id')->toArray();
 
@@ -148,6 +150,7 @@ public function showEnrollForm()
         'non_tech_count' => $nonTechCount,
         'shristi_count' => $shristiCount,
         'volunteer_count' => $volunteerCount,
+        'lib_count'=> $libCount,
         'registered_club_ids' => $registeredClubIds,
     ]);
 }
@@ -166,6 +169,7 @@ public function showEnrollForm()
     $maxNonTech = 1;
     $maxShristi = 4;
     $maxVolunteer = 1;
+    $maxlib=1;
 
     if (!$registration) {
         return response()->json([
@@ -174,6 +178,7 @@ public function showEnrollForm()
             'max_non_tech' => $maxNonTech,
             'max_shristi' => $maxShristi,
             'max_volunteer' => $maxVolunteer,
+            'max_lib'=> $maxlib,
             'current_tech_count' => 0,
             'current_non_tech_count' => 0,
             'current_shristi_count' => 0,
@@ -186,6 +191,7 @@ public function showEnrollForm()
     $currentNonTechCount = $registration->clubs()->where('category', 'non-technical')->count();
     $currentShristiCount = $registration->clubs()->where('category', 'shristi')->count();
     $currentVolunteerCount = $registration->clubs()->where('category', 'volunteering groups')->count();
+    $currentlibCount = $registration->clubs()->where('category', 'library')->count();
 
     return response()->json([
         'status' => 'existing_user',
@@ -197,6 +203,8 @@ public function showEnrollForm()
         'current_non_tech_count' => $currentNonTechCount,
         'current_shristi_count' => $currentShristiCount,
         'current_volunteer_count' => $currentVolunteerCount,
+        'current_lib_count' => $currentlibCount,
+
     ]);
 }
 
@@ -209,7 +217,9 @@ public function showEnrollForm()
         $allClubs = array_merge(
             $request->input('clubs', []),
             $request->input('shristi_clubs', []),
-            $request->input('volunteering_club', [])
+            $request->input('volunteering_club', []),
+            $request->input('library_club', [])
+
         );
         $request->merge(['clubs' => $allClubs]);
 
@@ -234,6 +244,8 @@ public function showEnrollForm()
         $maxNonTech = 1;
         $maxShristi = 4;
         $maxVolunteer = 1;
+        $maxlib = 1;
+
 
         if ($existingRegistration) {
             $alreadyRegisteredClubIds = $existingRegistration->clubs()->pluck('clubs.id')->toArray();
@@ -248,12 +260,14 @@ public function showEnrollForm()
             $currentNonTechCount = $existingRegistration->clubs()->where('category', 'non-technical')->count();
             $currentShristiCount = $existingRegistration->clubs()->where('category', 'shristi')->count();
             $currentVolunteerCount = $existingRegistration->clubs()->where('category', 'volunteering groups')->count();
+            $currentlibCount = $existingRegistration->clubs()->where('category', 'library')->count();
 
             // New selections by category
             $newTechCount = Club::whereIn('id', $newClubs)->where('category', 'technical')->count();
             $newNonTechCount = Club::whereIn('id', $newClubs)->where('category', 'non-technical')->count();
             $newShristiCount = Club::whereIn('id', $newClubs)->where('category', 'shristi')->count();
             $newVolunteerCount = Club::whereIn('id', $newClubs)->where('category', 'volunteering groups')->count();
+            $newlibCount = Club::whereIn('id', $newClubs)->where('category', 'library')->count();
 
             // Validate limits
             if (($currentTechCount + $newTechCount) > $maxTech) {
@@ -267,6 +281,9 @@ public function showEnrollForm()
             }
             if (($currentVolunteerCount + $newVolunteerCount) > $maxVolunteer) {
                 return redirect()->back()->with('error', 'Volunteering group registration limit exceeded (max 1).');
+            }
+            if (($currentlibCount + $newlibCount) > $maxlib) {
+                return redirect()->back()->with('error', 'Library clubs registration limit exceeded (max 1).');
             }
 
             // Attach new clubs
@@ -282,11 +299,12 @@ public function showEnrollForm()
             $nonTechnicalCount = $selectedClubs->where('category', 'non-technical')->count();
             $shristiCount = $selectedClubs->where('category', 'shristi')->count();
             $volunteerCount = $selectedClubs->where('category', 'volunteering groups')->count();
+            $libCount = $selectedClubs->where('category', 'library')->count();
 
             // Validate limits
-            if ($technicalCount > $maxTech || $nonTechnicalCount > $maxNonTech || $shristiCount > $maxShristi || $volunteerCount > $maxVolunteer) {
+            if ($technicalCount > $maxTech || $nonTechnicalCount > $maxNonTech || $shristiCount > $maxShristi || $volunteerCount > $maxVolunteer||$libCount>$maxlib) {
                 return redirect()->back()
-                    ->with('popup_message', 'You can select max 2 Technical, 1 Non-Technical, 4 Shristi, and 1 Volunteering group.')
+                    ->with('popup_message', 'You can select max 2 Technical, 1 Non-Technical, 4 Shristi, and 1 Volunteering group and 1 Library club.')
                     ->withInput();
             }
 
